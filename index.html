@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#FF5436">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="זינגו">
-<title>זינגו של שחר</title>
+<title>זינגו</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: single 520px column. Login = gradient cover + form. Home = header, progress band, meals strip, 7 gradient tiles. Coach = summary, meals gallery, per-day detail. Sheets slide up from bottom. */
@@ -228,11 +228,11 @@ const DAYS=[
  {id:4,key:"anger",g:"linear-gradient(135deg,#475569,#111827)",title:"מכתב כעס לעצמי",short:"להוציא את מה שיושב בפנים",
   why:"לפעמים אנחנו כועסות על עצמנו בשקט, וזה נשאר בגוף. היום את נותנת לכעס מקום על הדף, בלי לצנזר ובלי ליפות. אם זה מציף, מותר לעצור ולפנות למישהו קרוב או למאמן.",
   tasks:["15 דקות שקטות, לבד","לכתוב בלי לעצור ובלי לתקן","לסיים במשפט: ׳מה שהכי כואב לי זה…׳","חמש נשימות עמוקות","לשים לב איך את מרגישה אחרי"],
-  letter:"שחר, אני כועסת עלייך כי…"},
+  letter:"{name}, אני כועסת עלייך כי…"},
  {id:5,key:"forgive",g:"linear-gradient(135deg,#A78BFA,#6D28D9)",title:"מכתב סליחה לעצמי",short:"לסלוח, ולפנות מקום להתחלה",
   why:"אחרי הכעס מגיעה החמלה. כתבי לעצמך כמו שהיית כותבת לחברה הכי טובה שלך. מה היית אומרת לה? מה מגיע לה?",
   tasks:["לקרוא שוב את מכתב הכעס, אם מתאים לך","לכתוב מכתב סליחה","לכתוב 3 דברים שאת גאה בהם","לקרוא את המכתב בקול","לסיים במשפט: ׳מהיום אני בוחרת…׳"],
-  letter:"שחר, אני סולחת לך על…"},
+  letter:"{name}, אני סולחת לך על…"},
  {id:6,key:"chef",g:"linear-gradient(135deg,#10B981,#047857)",title:"יום השפית",short:"ארוחה בריאה לכל המשפחה",
   why:"היום את במטבח. מתכננת, קונה ומבשלת ארוחה בריאה למשפחה. בלי מטוגן ובלי סוכר מוסף. בסוף מצלמים את השולחן ושולחים למאמן.",
   tasks:["לתכנן מנה עיקרית, תוספת וסלט","לכתוב רשימת קניות","לבשל בתנור, באידוי או במחבת עם מעט שמן","לשבת לאכול יחד","לצלם את הארוחה ולשלוח"],
@@ -313,7 +313,7 @@ function renderLogin(mode){
  app.innerHTML=`<section class="login">
   <div class="cover"><canvas aria-hidden="true"></canvas>
    <div class="mark">זינגו<i>.</i></div>
-   <div><h1>${coach?"לוח מאמן":"שבוע אחד.<br>שבעה אתגרים."}</h1><p>${coach?"כל ההתקדמות, הכתיבה והארוחות במקום אחד.":"גוף, ראש ולב. תוכנית אישית לשחר."}</p></div>
+   <div><h1>${coach?"לוח מאמן":"שבוע אחד.<br>שבעה אתגרים."}</h1><p>${coach?"כל ההתקדמות, הכתיבה והארוחות במקום אחד.":"גוף, ראש ולב. תוכנית אישית בשבילך."}</p></div>
   </div>
   <form id="lf" autocomplete="on">
    ${configured?"":`<p class="notice">האפליקציה עוד לא מחוברת לשרת. אפשר להיכנס ולנסות, אבל הנתונים יישמרו רק בטלפון הזה.</p>`}
@@ -339,11 +339,12 @@ function renderLogin(mode){
    }else{
     const user=document.getElementById("u").value.trim().toLowerCase();
     if(!configured){
-     L.auth={user,pass:"",name:"שחר"};saveLocal();route();return;
+     if(L.lastUser!==user){S=blank();L.meals=[];L.pending=false;} L.lastUser=user; L.auth={user,pass:"",name:user};saveLocal();route();return;
     }
     const r=await api("login",{user,pass});
     if(!r.ok) throw {msg:"שם המשתמש או הסיסמה לא נכונים."};
-    L.auth={user,pass,name:r.name||user};
+    if(L.lastUser!==user){S=blank();L.meals=[];L.pending=false;}
+    L.lastUser=user; L.auth={user,pass,name:r.name||user};
     if(r.state&&(!S.updatedAt||!L.pending)) S=Object.assign(blank(),r.state,{letters:Object.assign({},r.state.letters,privateLetters())});
     L.meals=r.meals||[]; saveLocal(); online=true; route();
     if(L.pending) push();
@@ -361,7 +362,7 @@ function renderHome(){
  const ms=L.meals||[];
  app.innerHTML=`
  <div class="top"><div class="mark">זינגו<i>.</i></div><button class="link" id="out">יציאה</button></div>
- <div class="greet"><div class="eyebrow">${greet}</div><h1>${esc(L.auth.name||"שחר")}</h1></div>
+ <div class="greet"><div class="eyebrow">${greet}</div><h1>${esc(L.auth.name||"")}</h1></div>
  ${configured?"":`<p class="notice">מצב ניסיון: הנתונים נשמרים רק בטלפון הזה ולא נשלחים למאמן.</p>`}
  <div class="band">
   <div class="ring"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="36" stroke="var(--line)" stroke-width="8" fill="none"/><circle cx="42" cy="42" r="36" stroke="var(--accent)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/></svg><div class="n">${done}<small>/7</small></div></div>
@@ -478,7 +479,7 @@ function openDay(id){
    ${d.menu?`<div class="sec"><h3>התפריט</h3><label for="menu"><span class="count">מנה עיקרית, תוספת, סלט</span><textarea id="menu" placeholder="סלמון בתנור, בטטה צלויה, סלט ירוק עם לימון">${esc(S.menu)}</textarea></label></div>`:""}
    ${d.letter?`<div class="sec"><h3>המכתב</h3>
      <label class="opt" for="lp"><input type="checkbox" id="lp" ${S.letterPrivate[d.id]?"checked":""}>רק לעצמי. המאמן לא יראה את המכתב</label>
-     <textarea id="lt" class="paper" aria-label="המכתב" placeholder="${d.letter}">${esc(S.letters[d.id])}</textarea></div>`:""}
+     <textarea id="lt" class="paper" aria-label="המכתב" placeholder="${esc(d.letter.replace("{name}",(L.auth&&L.auth.name)||""))}">${esc(S.letters[d.id])}</textarea></div>`:""}
    ${d.journal?`<div class="sec"><h3>רגע לכתוב</h3><label for="jn"><span class="count">${d.journal}</span><textarea id="jn">${esc(S.notes[d.id])}</textarea></label></div>`:""}
    <div class="sec"><button class="btn ${S.done[d.id]?"done":""}" id="dn">${S.done[d.id]?"✓ האתגר הושלם":"סיימתי את האתגר"}</button>
    ${S.done[d.id]?'<p class="count" style="text-align:center">לחיצה נוספת תבטל את הסימון</p>':""}</div>
@@ -511,16 +512,58 @@ async function loadCoach(silent){
  }catch(e){ online=false; if(!silent) toast("אין חיבור לשרת."); }
  if(!sheetOpen&&L.coach) renderCoach();
 }
+let coachSel=null;
+function coachStats(t){
+ const st=Object.assign(blank(),t.state||{}), ms=t.meals||[];
+ const done=DAYS.filter(d=>st.done[d.id]).length;
+ const tasksDone=Object.values(st.tasks).filter(Boolean).length, tasksAll=DAYS.reduce((a,d)=>a+d.tasks.length,0);
+ const next=DAYS.find(d=>!st.done[d.id]);
+ const written=DAYS.filter(d=>(st.notes[d.id]||"").trim()||(!st.letterPrivate[d.id]&&(st.letters[d.id]||"").trim())).length;
+ return {st,ms,done,tasksDone,tasksAll,next,written};
+}
+function mealCards(ms,showName){
+ return `<div class="gallery">${ms.map(m=>`<a class="mealcard" href="https://drive.google.com/file/d/${encodeURIComponent(m.id)}/view" target="_blank" rel="noopener"><div class="img"><img src="${esc(thumb(m,600))}" alt="ארוחת ${esc(m.type)}" loading="lazy"></div>
+   <div class="meta"><b>${showName?esc(m.who)+" · ":""}${esc(m.type||"ארוחה")} · יום ${esc(m.day||"?")}</b><span class="count">${fmtTime(m.at)}</span>${m.note?`<p>${esc(m.note)}</p>`:""}</div></a>`).join("")}</div>`;
+}
+function coachTop(){
+ return `<div class="top"><div class="mark">זינגו<i>.</i></div><div style="display:flex;gap:14px;align-items:center"><button class="link" id="rf" aria-label="רענון" style="width:22px">${ICON.refresh}</button><button class="link" id="out">יציאה</button></div></div>`;
+}
+function bindCoachTop(){
+ document.getElementById("out").onclick=()=>{L.coach=null;coachData=null;coachSel=null;saveLocal();route();};
+ document.getElementById("rf").onclick=()=>loadCoach();
+}
 function renderCoach(){
  clearInterval(coachTimer);
  coachTimer=setInterval(()=>loadCoach(true),60000);
  if(!coachData){ app.innerHTML=`<div class="top"><div class="mark">זינגו<i>.</i></div></div><p class="empty">טוען נתונים…</p>`; loadCoach(); return; }
- const t=(coachData.trainees||[])[0]||{state:null,meals:[],name:"שחר"};
- const st=Object.assign(blank(),t.state||{}), ms=t.meals||[];
- const done=DAYS.filter(d=>st.done[d.id]).length;
- const tasksDone=Object.values(st.tasks).filter(Boolean).length, tasksAll=DAYS.reduce((a,d)=>a+d.tasks.length,0);
- app.innerHTML=`
- <div class="top"><div class="mark">זינגו<i>.</i></div><div style="display:flex;gap:14px;align-items:center"><button class="link" id="rf" aria-label="רענון" style="width:22px">${ICON.refresh}</button><button class="link" id="out">יציאה</button></div></div>
+ const list=coachData.trainees||[];
+ const t=coachSel!=null&&list.find(x=>x.user===coachSel);
+ if(t) return renderTrainee(t);
+ const allMeals=list.flatMap(x=>(x.meals||[]).map(m=>Object.assign({who:x.name},m))).sort((a,b)=>b.at-a.at);
+ app.innerHTML=`${coachTop()}
+ <div class="greet"><div class="eyebrow">לוח מאמן</div><h1>המתאמנות</h1>
+  <p class="count" style="margin-top:6px">${list.length} מתאמנות · מתרענן כל דקה</p></div>
+ <div class="list">${list.map(x=>{const c=coachStats(x);const circ=2*Math.PI*30,off=circ*(1-c.done/7);
+  return `<button class="band" data-u="${esc(x.user)}" style="text-align:right;width:100%">
+   <div class="ring" style="width:72px;height:72px"><svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="30" stroke="var(--line)" stroke-width="7" fill="none"/><circle cx="36" cy="36" r="30" stroke="var(--accent)" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/></svg><div class="n" style="font-size:20px">${c.done}<small>/7</small></div></div>
+   <div><h2>${esc(x.name)}</h2>
+    <p>${c.st.updatedAt?`עדכון אחרון: ${fmtTime(c.st.updatedAt)}`:"עוד לא נכנסה לאפליקציה"}</p>
+    <p>${c.tasksDone}/${c.tasksAll} משימות · ${c.ms.length} ארוחות · כתבה ב-${c.written} ימים</p>
+    <p>${c.next?`עכשיו ביום ${c.next.id}: ${c.next.title}`:"סיימה את השבוע"}</p>
+    <div class="dots">${DAYS.map(d=>`<span class="${c.st.done[d.id]?"on":""}"></span>`).join("")}</div></div>
+  </button>`;}).join("")}</div>
+ <div class="links">${coachData.sheetUrl?`<a href="${esc(coachData.sheetUrl)}" target="_blank" rel="noopener">פתח את הגיליון</a>`:""}${coachData.folderUrl?`<a href="${esc(coachData.folderUrl)}" target="_blank" rel="noopener">תיקיית התמונות</a>`:""}</div>
+ <section class="sec">
+  <div class="section-h"><h2 style="font-size:24px">ארוחות אחרונות</h2><span class="count">כל המתאמנות</span></div>
+  ${allMeals.length?mealCards(allMeals.slice(0,12),true):`<p class="empty">עוד לא הגיעו תמונות.</p>`}
+ </section>`;
+ bindCoachTop();
+ app.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{coachSel=b.dataset.u;renderCoach();window.scrollTo(0,0);});
+}
+function renderTrainee(t){
+ const {st,ms,done,tasksDone,tasksAll}=coachStats(t);
+ app.innerHTML=`${coachTop()}
+ <button class="link" id="back" style="align-self:flex-start">→ כל המתאמנות</button>
  <div class="greet"><div class="eyebrow">לוח מאמן</div><h1>${esc(t.name)}</h1>
   <p class="count" style="margin-top:6px">${st.updatedAt?`עדכון אחרון: ${fmtTime(st.updatedAt)}`:"עוד לא נכנסה לאפליקציה"} · מתרענן כל דקה</p></div>
  <div class="stats">
@@ -528,30 +571,30 @@ function renderCoach(){
   <div class="stat"><b>${tasksDone}/${tasksAll}</b><span>משימות</span></div>
   <div class="stat"><b>${ms.length}</b><span>תמונות ארוחה</span></div>
  </div>
- <div class="links">${coachData.sheetUrl?`<a href="${esc(coachData.sheetUrl)}" target="_blank" rel="noopener">פתח את הגיליון</a>`:""}${coachData.folderUrl?`<a href="${esc(coachData.folderUrl)}" target="_blank" rel="noopener">תיקיית התמונות</a>`:""}</div>
- <section class="sec">
-  <div class="section-h"><h2 style="font-size:24px">ארוחות</h2><span class="count">מהחדשה לישנה</span></div>
-  ${ms.length?`<div class="gallery">${ms.map(m=>`<a class="mealcard" href="https://drive.google.com/file/d/${encodeURIComponent(m.id)}/view" target="_blank" rel="noopener"><div class="img"><img src="${esc(thumb(m,600))}" alt="ארוחת ${esc(m.type)}" loading="lazy"></div>
-   <div class="meta"><b>${esc(m.type||"ארוחה")} · יום ${esc(m.day||"?")}</b><span class="count">${fmtTime(m.at)}</span>${m.note?`<p>${esc(m.note)}</p>`:""}</div></a>`).join("")}</div>`
-   :`<p class="empty">עוד לא הגיעו תמונות. כשהיא תצלם ארוחה, התמונה תופיע כאן.</p>`}
- </section>
  <section class="sec">
   <h2 style="font-size:24px">יום אחר יום</h2>
   ${DAYS.map(d=>{
    const n=d.tasks.filter((_,i)=>st.tasks[d.id+"-"+i]).length;
    const letter=(st.letters||{})[d.id], priv=(st.letterPrivate||{})[d.id];
-   return `<details class="daylog" style="--g:${d.g}">
-    <summary><span class="sw">${d.id}</span><span><b>${d.title}</b><span class="count">${n}/${d.tasks.length} משימות${d.km?` · ${Number(st.km||0).toFixed(1)} ק״מ`:""}</span></span>
+   const dm=ms.filter(m=>+m.day===d.id);
+   const has=n||st.done[d.id]||st.notes[d.id]||letter||dm.length||(d.menu&&st.menu);
+   return `<details class="daylog" style="--g:${d.g}" ${has?"open":""}>
+    <summary><span class="sw">${d.id}</span><span><b>${d.title}</b><span class="count">${n}/${d.tasks.length} משימות${d.km?` · ${Number(st.km||0).toFixed(1)} ק״מ`:""}${dm.length?` · ${dm.length} ארוחות`:""}</span></span>
      <span class="pill ${st.done[d.id]?"ok":"no"}">${st.done[d.id]?"הושלם":"פתוח"}</span></summary>
     <div class="in">
      <ul class="mini">${d.tasks.map((tk,i)=>`<li class="${st.tasks[d.id+"-"+i]?"":"n"}">${st.tasks[d.id+"-"+i]?ICON.check:ICON.dash}<span>${tk}</span></li>`).join("")}</ul>
      ${d.menu?`<div><h4>התפריט</h4><div class="quote">${st.menu?esc(st.menu):"עוד לא נכתב"}</div></div>`:""}
      ${d.letter?`<div><h4>המכתב</h4><div class="quote serif">${priv?"היא בחרה לשמור את המכתב לעצמה.":letter?esc(letter):"עוד לא נכתב"}</div></div>`:""}
      ${d.journal?`<div><h4>${d.journal}</h4><div class="quote">${st.notes[d.id]?esc(st.notes[d.id]):"עוד לא נכתב"}</div></div>`:""}
+     ${dm.length?`<div><h4>ארוחות היום</h4>${mealCards(dm,false)}</div>`:""}
     </div></details>`;}).join("")}
+ </section>
+ <section class="sec">
+  <div class="section-h"><h2 style="font-size:24px">כל הארוחות</h2><span class="count">מהחדשה לישנה</span></div>
+  ${ms.length?mealCards(ms,false):`<p class="empty">עוד לא הגיעו תמונות. כשהיא תצלם ארוחה, התמונה תופיע כאן.</p>`}
  </section>`;
- document.getElementById("out").onclick=()=>{L.coach=null;coachData=null;saveLocal();route();};
- document.getElementById("rf").onclick=()=>loadCoach();
+ bindCoachTop();
+ document.getElementById("back").onclick=()=>{coachSel=null;renderCoach();window.scrollTo(0,0);};
 }
 
 /* ---------- boot ---------- */
