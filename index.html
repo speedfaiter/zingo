@@ -209,40 +209,45 @@ const ICON={
  refresh:I('<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/>')
 };
 
-const DAYS=[
+const DAYS_RAW=[
  {id:1,key:"carbs",g:"linear-gradient(135deg,#F59E0B,#EA580C)",title:"בלי פחמימות",short:"לחם, פסטה ואורז נשארים בחוץ",
-  why:"יום אחד בלי פחמימות פשוטות מראה לך כמה מהן נכנסות לצלחת בלי שאת שמה לב. המטרה היא מודעות, לא רעב. בני כל ארוחה סביב חלבון, ירקות ושומן טוב. צלמי כל ארוחה ושלחי למאמן.",
+  why:"יום אחד בלי פחמימות פשוטות מראה לך כמה מהן נכנסות לצלחת בלי {שאת שמה|שאתה שם} לב. המטרה היא מודעות, לא רעב. {בני|בנה} כל ארוחה סביב חלבון, ירקות ושומן טוב. {צלמי|צלם} כל ארוחה {ושלחי|ושלח} למאמן.",
   tasks:["ארוחת בוקר: ביצים, גבינה או יוגורט עם ירקות","ארוחת צהריים: חלבון וחצי צלחת ירקות","ארוחת ערב בלי לחם","8 כוסות מים","לפני כל נשנוש: לעצור ולשאול אם זה רעב או שעמום"],
   chips:["ביצים","טונה","חזה עוף","טופו","קוטג׳","אבוקדו","אגוזים","עלים ירוקים"],
   journal:"מתי היה הכי קשה היום, ומה עזר לך לעבור את זה?",meals:true},
  {id:2,key:"sugar",g:"linear-gradient(135deg,#F43F5E,#BE185D)",title:"בלי סוכר",short:"בלי מתוקים ובלי שתייה ממותקת",
-  why:"סוכר מסתתר ביוגורטים, ברטבים ובקפה. היום את מגלה איפה בדיוק. כשמתחשק מתוק, קחי פרי ותני לחשק עשר דקות. ברוב המקרים הוא עובר. צלמי כל ארוחה ושלחי למאמן.",
+  why:"סוכר מסתתר ביוגורטים, ברטבים ובקפה. היום {את מגלה|אתה מגלה} איפה בדיוק. כשמתחשק מתוק, {קחי|קח} פרי {ותני|ותן} לחשק עשר דקות. ברוב המקרים הוא עובר. {צלמי|צלם} כל ארוחה {ושלחי|ושלח} למאמן.",
   tasks:["קפה ותה בלי סוכר","לקרוא תווית של מוצר אחד ולמצוא בו סוכר","פרי במקום קינוח","רק מים, סודה או תה","לרשום את הרגע שבו החשק הכי חזק"],
   chips:["תות","תפוח עם טחינה גולמית","ענבים קפואים","מים עם לימון ונענע","תה צמחים"],
   journal:"מה קרה ברגע שהחשק למתוק הגיע? מה הרגשת?",meals:true},
  {id:3,key:"walk",g:"linear-gradient(135deg,#0EA5E9,#4338CA)",title:"5 ק״מ ברגל",short:"שעה של הליכה, בקצב שלך",
-  why:"חמישה קילומטרים הם בערך שעה של הליכה נעימה. אפשר בבת אחת או בשני חלקים. עדכני כאן כל קטע שהלכת.",
+  why:"חמישה קילומטרים הם בערך שעה של הליכה נעימה. אפשר בבת אחת או בשני חלקים. {עדכני|עדכן} כאן כל קטע שהלכת.",
   tasks:["לקבוע מסלול ושעה","נעליים נוחות ובקבוק מים","3 דקות חימום","להשלים 5 ק״מ","5 דקות מתיחות בסוף"],
   chips:["פודקאסט","פלייליסט","עם חברה","בשקיעה"],
   journal:"איך הגוף והראש הרגישו בסוף ההליכה?",km:true},
  {id:4,key:"anger",g:"linear-gradient(135deg,#475569,#111827)",title:"מכתב כעס לעצמי",short:"להוציא את מה שיושב בפנים",
-  why:"לפעמים אנחנו כועסות על עצמנו בשקט, וזה נשאר בגוף. היום את נותנת לכעס מקום על הדף, בלי לצנזר ובלי ליפות. אם זה מציף, מותר לעצור ולפנות למישהו קרוב או למאמן.",
-  tasks:["15 דקות שקטות, לבד","לכתוב בלי לעצור ובלי לתקן","לסיים במשפט: ׳מה שהכי כואב לי זה…׳","חמש נשימות עמוקות","לשים לב איך את מרגישה אחרי"],
-  letter:"{name}, אני כועסת עלייך כי…"},
+  why:"לפעמים אנחנו {כועסות|כועסים} על עצמנו בשקט, וזה נשאר בגוף. היום {את נותנת|אתה נותן} לכעס מקום על הדף, בלי לצנזר ובלי ליפות. אם זה מציף, מותר לעצור ולפנות למישהו קרוב או למאמן.",
+  tasks:["15 דקות שקטות, לבד","לכתוב בלי לעצור ובלי לתקן","לסיים במשפט: ׳מה שהכי כואב לי זה…׳","חמש נשימות עמוקות","לשים לב {איך את מרגישה|איך אתה מרגיש} אחרי"],
+  letter:"{name}, אני {כועסת עלייך|כועס עליך} כי…"},
  {id:5,key:"forgive",g:"linear-gradient(135deg,#A78BFA,#6D28D9)",title:"מכתב סליחה לעצמי",short:"לסלוח, ולפנות מקום להתחלה",
-  why:"אחרי הכעס מגיעה החמלה. כתבי לעצמך כמו שהיית כותבת לחברה הכי טובה שלך. מה היית אומרת לה? מה מגיע לה?",
-  tasks:["לקרוא שוב את מכתב הכעס, אם מתאים לך","לכתוב מכתב סליחה","לכתוב 3 דברים שאת גאה בהם","לקרוא את המכתב בקול","לסיים במשפט: ׳מהיום אני בוחרת…׳"],
-  letter:"{name}, אני סולחת לך על…"},
- {id:6,key:"chef",g:"linear-gradient(135deg,#10B981,#047857)",title:"יום השפית",short:"ארוחה בריאה לכל המשפחה",
-  why:"היום את במטבח. מתכננת, קונה ומבשלת ארוחה בריאה למשפחה. בלי מטוגן ובלי סוכר מוסף. בסוף מצלמים את השולחן ושולחים למאמן.",
+  why:"אחרי הכעס מגיעה החמלה. {כתבי|כתוב} לעצמך כמו {שהיית כותבת לחברה הכי טובה שלך. מה היית אומרת לה? מה מגיע לה?|שהיית כותב לחבר הכי טוב שלך. מה היית אומר לו? מה מגיע לו?}",
+  tasks:["לקרוא שוב את מכתב הכעס, אם מתאים לך","לכתוב מכתב סליחה","לכתוב 3 דברים {שאת גאה|שאתה גאה} בהם","לקרוא את המכתב בקול","לסיים במשפט: ׳מהיום אני {בוחרת|בוחר}…׳"],
+  letter:"{name}, אני {סולחת|סולח} לך על…"},
+ {id:6,key:"chef",g:"linear-gradient(135deg,#10B981,#047857)",title:"{יום השפית|יום השף}",short:"ארוחה בריאה לכל המשפחה",
+  why:"היום {את במטבח. מתכננת, קונה ומבשלת|אתה במטבח. מתכנן, קונה ומבשל} ארוחה בריאה למשפחה. בלי מטוגן ובלי סוכר מוסף. בסוף מצלמים את השולחן ושולחים למאמן.",
   tasks:["לתכנן מנה עיקרית, תוספת וסלט","לכתוב רשימת קניות","לבשל בתנור, באידוי או במחבת עם מעט שמן","לשבת לאכול יחד","לצלם את הארוחה ולשלוח"],
   chips:["סלמון בתנור","עוף בעשבי תיבול","מוקפץ ירקות","מרק עדשים","סלט קינואה","פשטידת ירקות"],
-  journal:"מה המשפחה אמרה? מה תעשי אחרת בפעם הבאה?",menu:true,meals:true},
+  journal:"מה המשפחה אמרה? מה {תעשי|תעשה} אחרת בפעם הבאה?",menu:true,meals:true},
  {id:7,key:"star",g:"linear-gradient(135deg,#FF5436,#DB2777 55%,#7C3AED)",title:"סיכום השבוע",short:"מסתכלים אחורה ומפנקים",
-  why:"שבוע של אתגרים מאחורייך. היום קוראים את מה שכתבת, בוחרים הרגל אחד שממשיך איתך, ומפנקים את עצמך במשהו שלא קשור לאוכל.",
+  why:"שבוע של אתגרים {מאחורייך|מאחוריך}. היום קוראים את מה שכתבת, בוחרים הרגל אחד שממשיך איתך, ומפנקים את עצמך במשהו שלא קשור לאוכל.",
   tasks:["לקרוא את כל מה שכתבת השבוע","לבחור את האתגר שהכי הפתיע אותך","פינוק: מסאז׳, סרט, טיול או ציפורניים","לכתוב למאמן סיכום קצר","לבחור הרגל אחד שנשאר"],
   journal:"מה למדת על עצמך השבוע?"}
 ];
+const G=()=>(L&&L.auth&&L.auth.gender)==="m";
+function tg(isM,s){return String(s).replace(/\{([^|{}]*)\|([^{}]*)\}/g,(_,f,m)=>isM?m:f);}
+function t(s){return tg(G(),s);}
+const dayFor=isM=>DAYS_RAW.map(d=>Object.assign({},d,{title:tg(isM,d.title),short:tg(isM,d.short),why:tg(isM,d.why),journal:d.journal&&tg(isM,d.journal),letter:d.letter&&tg(isM,d.letter),tasks:d.tasks.map(x=>tg(isM,x))}));
+let DAYS=dayFor(false);
 const MEAL_TYPES=["בוקר","צהריים","ערב","נשנוש"];
 
 /* ---------- local state ---------- */
@@ -281,7 +286,7 @@ async function push(){
  try{
   const r=await api("save",{user:L.auth.user,pass:L.auth.pass,state:sharedState()});
   if(r.ok){ if(S.updatedAt===sentAt){L.pending=false;saveLocal();} setStatus(true); }
-  else if(r.error==="bad_login"){ setStatus(false); toast("הסיסמה השתנתה. התחברי מחדש."); L.auth=null; saveLocal(); route(); }
+  else if(r.error==="bad_login"){ setStatus(false); toast("הסיסמה השתנתה. צריך להתחבר מחדש."); L.auth=null; saveLocal(); route(); }
   else setStatus(false);
  }catch(e){ setStatus(false); }
  pushing=false;
@@ -303,7 +308,7 @@ function route(){
  if(sheetOpen) return;
  clearInterval(coachTimer);
  if(L.coach) return renderCoach();
- if(L.auth) return renderHome();
+ if(L.auth){ DAYS=dayFor(G()); return renderHome(); }
  renderLogin();
 }
 
@@ -321,7 +326,7 @@ function renderLogin(mode){
    <label for="p">${coach?"סיסמת מאמן":"סיסמה"}<input id="p" type="password" autocomplete="current-password" required></label>
    <p class="err" id="e" role="alert"></p>
    <button class="btn" type="submit" id="go">כניסה</button>
-   <button class="link alt" type="button" id="sw">${coach?"חזרה לכניסת מתאמנת":"כניסת מאמן"}</button>
+   <button class="link alt" type="button" id="sw">${coach?"חזרה לכניסת מתאמנים":"כניסת מאמן"}</button>
   </form></section>`;
  grain(app.querySelector("canvas"));
  document.getElementById("sw").onclick=()=>renderLogin(coach?"":"coach");
@@ -329,7 +334,7 @@ function renderLogin(mode){
   ev.preventDefault();
   const err=document.getElementById("e"), go=document.getElementById("go");
   const pass=document.getElementById("p").value;
-  err.textContent=""; go.disabled=true; go.textContent="מתחברת…";
+  err.textContent=""; go.disabled=true; go.textContent="מתחבר…";
   try{
    if(coach){
     if(!configured) throw {msg:"לוח המאמן עובד רק אחרי חיבור לשרת."};
@@ -344,12 +349,12 @@ function renderLogin(mode){
     const r=await api("login",{user,pass});
     if(!r.ok) throw {msg:"שם המשתמש או הסיסמה לא נכונים."};
     if(L.lastUser!==user){S=blank();L.meals=[];L.pending=false;}
-    L.lastUser=user; L.auth={user,pass,name:r.name||user};
+    L.lastUser=user; L.auth={user,pass,name:r.name||user,gender:r.gender||"f"};
     if(r.state&&(!S.updatedAt||!L.pending)) S=Object.assign(blank(),r.state,{letters:Object.assign({},r.state.letters,privateLetters())});
     L.meals=r.meals||[]; saveLocal(); online=true; route();
     if(L.pending) push();
    }
-  }catch(e){ err.textContent=e&&e.msg||"אין חיבור לשרת. בדקי אינטרנט ונסי שוב."; go.disabled=false; go.textContent="כניסה"; }
+  }catch(e){ err.textContent=e&&e.msg||"אין חיבור לשרת. כדאי לבדוק את האינטרנט ולנסות שוב."; go.disabled=false; go.textContent="כניסה"; }
  });
 }
 function privateLetters(){const o={};for(const k in S.letterPrivate){if(S.letterPrivate[k]&&S.letters[k])o[k]=S.letters[k];}return o;}
@@ -366,14 +371,14 @@ function renderHome(){
  ${configured?"":`<p class="notice">מצב ניסיון: הנתונים נשמרים רק בטלפון הזה ולא נשלחים למאמן.</p>`}
  <div class="band">
   <div class="ring"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="36" stroke="var(--line)" stroke-width="8" fill="none"/><circle cx="42" cy="42" r="36" stroke="var(--accent)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/></svg><div class="n">${done}<small>/7</small></div></div>
-  <div><h2>${done===7?"השבוע הושלם":done?"ממשיכות":"מתחילות היום"}</h2>
-  <p>${next?`הבא: יום ${next.id}, ${next.title}`:"כל שבעת האתגרים מאחורייך."}</p>
+  <div><h2>${done===7?"השבוע הושלם":done?t("{ממשיכות|ממשיכים}"):t("{מתחילות|מתחילים} היום")}</h2>
+  <p>${next?`הבא: יום ${next.id}, ${next.title}`:t("כל שבעת האתגרים {מאחורייך|מאחוריך}.")}</p>
   <div class="dots">${DAYS.map(d=>`<span class="${S.done[d.id]?"on":""}"></span>`).join("")}</div></div>
  </div>
  <section class="meals">
   <div class="head"><h2>הארוחות שלי</h2><span class="count">${ms.length} נשלחו</span></div>
   ${ms.length?`<div class="thumbs">${ms.slice(0,8).map(m=>`<div class="thumb"><img src="${esc(thumb(m,300))}" alt="ארוחת ${esc(m.type)}" loading="lazy"><span>${esc(m.type)}</span></div>`).join("")}</div>`:`<p class="empty">עוד לא צילמת ארוחה. כל תמונה מגיעה ישר למאמן.</p>`}
-  <button class="btn" id="snap">${ICON.camera}צלמי ארוחה ושלחי</button>
+  <button class="btn" id="snap">${ICON.camera}${t("{צלמי|צלם} ארוחה {ושלחי|ושלח}")}</button>
  </section>
  <div class="section-h"><h2>שבעת הימים</h2>${configured?statusHtml():""}</div>
  <div class="list">${DAYS.map(d=>`
@@ -383,7 +388,7 @@ function renderHome(){
    <div class="txt"><span class="eyebrow">יום ${d.id}</span><h3>${d.title}</h3><p>${d.short}</p></div>
    <div class="ic" aria-hidden="true">${ICON[d.key]}</div>
   </button>`).join("")}</div>
- <p class="foot">המאמן רואה את ההתקדמות, הכתיבה ותמונות הארוחות שלך. מכתב שתסמני ״רק לעצמי״ נשאר רק בטלפון שלך.</p>`;
+ <p class="foot">המאמן רואה את ההתקדמות, הכתיבה ותמונות הארוחות שלך. מכתב ${t("{שתסמני|שתסמן}")} ״רק לעצמי״ נשאר רק בטלפון שלך.</p>`;
  document.getElementById("out").onclick=()=>{L.auth=null;saveLocal();route();};
  document.getElementById("snap").onclick=()=>openMeal();
  app.querySelectorAll(".tile").forEach(b=>b.onclick=()=>openDay(+b.dataset.id));
@@ -417,7 +422,7 @@ function openMeal(presetDay){
   <div class="body" style="padding-top:22px;position:relative">
    <button class="close dark" aria-label="סגירה">✕</button>
    <div><span class="eyebrow">נשלח ישר למאמן</span><h2 style="font-size:32px;margin-top:4px">צילום ארוחה</h2></div>
-   <label class="shot" id="shot"><span class="ph">${ICON.camera}<span>לחצי כדי לצלם או לבחור תמונה</span></span><input type="file" id="mf" accept="image/*" capture="environment" aria-label="צילום ארוחה"></label>
+   <label class="shot" id="shot"><span class="ph">${ICON.camera}<span>${t("{לחצי|לחץ} כדי לצלם או לבחור תמונה")}</span></span><input type="file" id="mf" accept="image/*" capture="environment" aria-label="צילום ארוחה"></label>
    <div class="sec"><h3>איזו ארוחה?</h3><div class="pick" id="mt">${MEAL_TYPES.map(t=>`<button type="button" aria-pressed="${t===type}" data-v="${t}">${t}</button>`).join("")}</div></div>
    <div class="sec"><h3>של איזה יום באתגר?</h3><div class="pick" id="md">${DAYS.map(d=>`<button type="button" aria-pressed="${d.id===day}" data-v="${d.id}">${d.id}</button>`).join("")}</div></div>
    <label for="mn">מה יש בצלחת? (לא חובה)<textarea id="mn" style="min-height:80px" placeholder="חביתה משתי ביצים, סלט ירקות, חצי אבוקדו"></textarea></label>
@@ -430,7 +435,7 @@ function openMeal(presetDay){
  bindPick("mt",v=>type=v); bindPick("md",v=>day=+v);
  sendBtn.onclick=async()=>{
   if(!file) return;
-  sendBtn.disabled=true; sendBtn.textContent="שולחת…";
+  sendBtn.disabled=true; sendBtn.textContent=t("{שולחת|שולח}…");
   const note=ov.querySelector("#mn").value.trim();
   try{
    const cv=await shrink(file);
@@ -448,7 +453,7 @@ function openMeal(presetDay){
    close();
   }catch(e){
    sendBtn.disabled=false; sendBtn.innerHTML=`${ICON.send}שליחה למאמן`;
-   toast(e&&e.message==="bad_image"?"לא הצלחתי לפתוח את התמונה. נסי תמונה אחרת.":"השליחה נכשלה. בדקי חיבור ונסי שוב.");
+   toast(e&&e.message==="bad_image"?t("לא הצלחתי לפתוח את התמונה. {נסי|נסה} תמונה אחרת."):t("השליחה נכשלה. {בדקי|בדוק} חיבור {ונסי|ונסה} שוב."));
   }
  };
 }
@@ -474,7 +479,7 @@ function openDay(id){
     <ul class="checks">${d.tasks.map((t,i)=>`<li><label for="t${d.id}-${i}"><input type="checkbox" id="t${d.id}-${i}" data-t="${d.id}-${i}" ${S.tasks[d.id+"-"+i]?"checked":""}><span>${t}</span></label></li>`).join("")}</ul></div>
    ${d.meals?`<div class="sec"><div class="section-h"><h3>ארוחות היום</h3><span class="count">${dayMeals.length} נשלחו</span></div>
     ${dayMeals.length?`<div class="thumbs">${dayMeals.map(m=>`<div class="thumb"><img src="${esc(thumb(m,300))}" alt="ארוחת ${esc(m.type)}" loading="lazy"><span>${esc(m.type)}</span></div>`).join("")}</div>`:""}
-    <button class="btn sec" id="snapday">${ICON.camera}צלמי ארוחה</button></div>`:""}
+    <button class="btn sec" id="snapday">${ICON.camera}${t("{צלמי|צלם} ארוחה")}</button></div>`:""}
    ${d.chips?`<div class="sec"><h3>${d.key==="chef"?"רעיונות למנות":d.key==="walk"?"מה יעשה את זה כיף":"מה כן לאכול"}</h3><div class="chips">${d.chips.map(c=>`<span class="chip">${c}</span>`).join("")}</div></div>`:""}
    ${d.menu?`<div class="sec"><h3>התפריט</h3><label for="menu"><span class="count">מנה עיקרית, תוספת, סלט</span><textarea id="menu" placeholder="סלמון בתנור, בטטה צלויה, סלט ירוק עם לימון">${esc(S.menu)}</textarea></label></div>`:""}
    ${d.letter?`<div class="sec"><h3>המכתב</h3>
@@ -514,11 +519,12 @@ async function loadCoach(silent){
 }
 let coachSel=null;
 function coachStats(t){
+ const D=dayFor(t.gender==="m");
  const st=Object.assign(blank(),t.state||{}), ms=t.meals||[];
- const done=DAYS.filter(d=>st.done[d.id]).length;
- const tasksDone=Object.values(st.tasks).filter(Boolean).length, tasksAll=DAYS.reduce((a,d)=>a+d.tasks.length,0);
- const next=DAYS.find(d=>!st.done[d.id]);
- const written=DAYS.filter(d=>(st.notes[d.id]||"").trim()||(!st.letterPrivate[d.id]&&(st.letters[d.id]||"").trim())).length;
+ const done=D.filter(d=>st.done[d.id]).length;
+ const tasksDone=Object.values(st.tasks).filter(Boolean).length, tasksAll=D.reduce((a,d)=>a+d.tasks.length,0);
+ const next=D.find(d=>!st.done[d.id]);
+ const written=D.filter(d=>(st.notes[d.id]||"").trim()||(!st.letterPrivate[d.id]&&(st.letters[d.id]||"").trim())).length;
  return {st,ms,done,tasksDone,tasksAll,next,written};
 }
 function mealCards(ms,showName){
@@ -541,31 +547,32 @@ function renderCoach(){
  if(t) return renderTrainee(t);
  const allMeals=list.flatMap(x=>(x.meals||[]).map(m=>Object.assign({who:x.name},m))).sort((a,b)=>b.at-a.at);
  app.innerHTML=`${coachTop()}
- <div class="greet"><div class="eyebrow">לוח מאמן</div><h1>המתאמנות</h1>
-  <p class="count" style="margin-top:6px">${list.length} מתאמנות · מתרענן כל דקה</p></div>
+ <div class="greet"><div class="eyebrow">לוח מאמן</div><h1>המתאמנים</h1>
+  <p class="count" style="margin-top:6px">${list.length} ${list.length===1?"מתאמן/ת":"מתאמנים"} · מתרענן כל דקה</p></div>
  <div class="list">${list.map(x=>{const c=coachStats(x);const circ=2*Math.PI*30,off=circ*(1-c.done/7);
   return `<button class="band" data-u="${esc(x.user)}" style="text-align:right;width:100%">
    <div class="ring" style="width:72px;height:72px"><svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="30" stroke="var(--line)" stroke-width="7" fill="none"/><circle cx="36" cy="36" r="30" stroke="var(--accent)" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/></svg><div class="n" style="font-size:20px">${c.done}<small>/7</small></div></div>
    <div><h2>${esc(x.name)}</h2>
-    <p>${c.st.updatedAt?`עדכון אחרון: ${fmtTime(c.st.updatedAt)}`:"עוד לא נכנסה לאפליקציה"}</p>
-    <p>${c.tasksDone}/${c.tasksAll} משימות · ${c.ms.length} ארוחות · כתבה ב-${c.written} ימים</p>
-    <p>${c.next?`עכשיו ביום ${c.next.id}: ${c.next.title}`:"סיימה את השבוע"}</p>
+    <p>${c.st.updatedAt?`עדכון אחרון: ${fmtTime(c.st.updatedAt)}`:tg(x.gender==="m","עוד לא {נכנסה|נכנס} לאפליקציה")}</p>
+    <p>${c.tasksDone}/${c.tasksAll} משימות · ${c.ms.length} ארוחות · ${tg(x.gender==="m","{כתבה|כתב}")} ב-${c.written} ימים</p>
+    <p>${c.next?`עכשיו ביום ${c.next.id}: ${tg(x.gender==="m",c.next.title)}`:tg(x.gender==="m","{סיימה|סיים} את השבוע")}</p>
     <div class="dots">${DAYS.map(d=>`<span class="${c.st.done[d.id]?"on":""}"></span>`).join("")}</div></div>
   </button>`;}).join("")}</div>
  <div class="links">${coachData.sheetUrl?`<a href="${esc(coachData.sheetUrl)}" target="_blank" rel="noopener">פתח את הגיליון</a>`:""}${coachData.folderUrl?`<a href="${esc(coachData.folderUrl)}" target="_blank" rel="noopener">תיקיית התמונות</a>`:""}</div>
  <section class="sec">
-  <div class="section-h"><h2 style="font-size:24px">ארוחות אחרונות</h2><span class="count">כל המתאמנות</span></div>
+  <div class="section-h"><h2 style="font-size:24px">ארוחות אחרונות</h2><span class="count">כל המתאמנים</span></div>
   ${allMeals.length?mealCards(allMeals.slice(0,12),true):`<p class="empty">עוד לא הגיעו תמונות.</p>`}
  </section>`;
  bindCoachTop();
  app.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{coachSel=b.dataset.u;renderCoach();window.scrollTo(0,0);});
 }
 function renderTrainee(t){
+ const isM=t.gender==="m"; DAYS=dayFor(isM);
  const {st,ms,done,tasksDone,tasksAll}=coachStats(t);
  app.innerHTML=`${coachTop()}
- <button class="link" id="back" style="align-self:flex-start">→ כל המתאמנות</button>
+ <button class="link" id="back" style="align-self:flex-start">→ כל המתאמנים</button>
  <div class="greet"><div class="eyebrow">לוח מאמן</div><h1>${esc(t.name)}</h1>
-  <p class="count" style="margin-top:6px">${st.updatedAt?`עדכון אחרון: ${fmtTime(st.updatedAt)}`:"עוד לא נכנסה לאפליקציה"} · מתרענן כל דקה</p></div>
+  <p class="count" style="margin-top:6px">${st.updatedAt?`עדכון אחרון: ${fmtTime(st.updatedAt)}`:tg(isM,"עוד לא {נכנסה|נכנס} לאפליקציה")} · מתרענן כל דקה</p></div>
  <div class="stats">
   <div class="stat"><b>${done}/7</b><span>ימים הושלמו</span></div>
   <div class="stat"><b>${tasksDone}/${tasksAll}</b><span>משימות</span></div>
@@ -584,14 +591,14 @@ function renderTrainee(t){
     <div class="in">
      <ul class="mini">${d.tasks.map((tk,i)=>`<li class="${st.tasks[d.id+"-"+i]?"":"n"}">${st.tasks[d.id+"-"+i]?ICON.check:ICON.dash}<span>${tk}</span></li>`).join("")}</ul>
      ${d.menu?`<div><h4>התפריט</h4><div class="quote">${st.menu?esc(st.menu):"עוד לא נכתב"}</div></div>`:""}
-     ${d.letter?`<div><h4>המכתב</h4><div class="quote serif">${priv?"היא בחרה לשמור את המכתב לעצמה.":letter?esc(letter):"עוד לא נכתב"}</div></div>`:""}
+     ${d.letter?`<div><h4>המכתב</h4><div class="quote serif">${priv?tg(isM,"{היא בחרה לשמור את המכתב לעצמה.|הוא בחר לשמור את המכתב לעצמו.}"):letter?esc(letter):"עוד לא נכתב"}</div></div>`:""}
      ${d.journal?`<div><h4>${d.journal}</h4><div class="quote">${st.notes[d.id]?esc(st.notes[d.id]):"עוד לא נכתב"}</div></div>`:""}
      ${dm.length?`<div><h4>ארוחות היום</h4>${mealCards(dm,false)}</div>`:""}
     </div></details>`;}).join("")}
  </section>
  <section class="sec">
   <div class="section-h"><h2 style="font-size:24px">כל הארוחות</h2><span class="count">מהחדשה לישנה</span></div>
-  ${ms.length?mealCards(ms,false):`<p class="empty">עוד לא הגיעו תמונות. כשהיא תצלם ארוחה, התמונה תופיע כאן.</p>`}
+  ${ms.length?mealCards(ms,false):`<p class="empty">${tg(isM,"עוד לא הגיעו תמונות. {כשהיא תצלם|כשהוא יצלם} ארוחה, התמונה תופיע כאן.")}</p>`}
  </section>`;
  bindCoachTop();
  document.getElementById("back").onclick=()=>{coachSel=null;renderCoach();window.scrollTo(0,0);};
