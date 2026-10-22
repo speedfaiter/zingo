@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FF5436">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="זינגו">
+<title>זינגו של שחר</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: single 520px column. Login = gradient cover + form. Home = header, progress band, meals strip, 7 gradient tiles. Coach = summary, meals gallery, per-day detail. Sheets slide up from bottom. */
+:root{
+  --bg:#F5F2EE; --surface:#FFFFFF; --ink:#16131C; --muted:#6F6976; --line:#E6E0D9;
+  --accent:#FF5436; --accent-ink:#FFFFFF; --ok:#1F9D6B; --warn:#B45309;
+  --serif:"Frank Ruhl Libre",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans Hebrew",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{--bg:#0F0D13;--surface:#1A1720;--ink:#F3EFF6;--muted:#A49CAD;--line:#2C2834;--accent:#FF6A4D;--ok:#34C48B;--warn:#F59E0B;color-scheme:dark}}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-text-size-adjust:100%;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 48px}
+img{max-width:100%}
+[hidden]{display:none!important}
+.app{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--serif);font-weight:700;margin:0;line-height:1.1;text-wrap:balance}
+p{margin:0}
+button{font:inherit;cursor:pointer;border:0;color:inherit;background:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.btn{background:var(--accent);color:var(--accent-ink);border-radius:14px;padding:15px 20px;font-weight:600;font-size:16px;width:100%;transition:transform .12s,filter .12s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{filter:brightness(1.05)}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.55;cursor:default}
+.btn.done{background:var(--ok)}
+.btn.sec{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn svg{width:20px;height:20px}
+.link{font-size:14px;font-weight:600;color:var(--muted);padding:8px 0}
+.mark{font-family:var(--serif);font-weight:900;font-size:22px;letter-spacing:-.01em}
+.mark i{font-style:normal;color:var(--accent)}
+.status{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.status b{width:8px;height:8px;border-radius:50%;background:var(--ok);flex:none}
+.status.off b{background:var(--warn)}
+.status.wait b{background:var(--muted)}
+.count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.login{border-radius:28px;overflow:hidden;background:var(--surface);border:1px solid var(--line)}
+.login .cover{position:relative;min-height:300px;padding:24px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;
+  background:radial-gradient(120% 90% at 85% 10%,#FFB36B 0,transparent 55%),radial-gradient(90% 80% at 10% 100%,#C2185B 0,transparent 60%),linear-gradient(160deg,#FF5436,#7A1E5C)}
+.login .cover canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.5;mix-blend-mode:soft-light}
+.login .cover>*{position:relative}
+.login .cover .mark i{color:#FFE0A3}
+.login .cover h1{font-size:44px;font-weight:900;letter-spacing:-.02em}
+.login .cover p{opacity:.88;margin-top:8px;max-width:30ch}
+.login form{padding:24px;display:flex;flex-direction:column;gap:14px}
+.login .alt{text-align:center}
+label{font-weight:600;font-size:14px;display:flex;flex-direction:column;gap:6px}
+input[type=text],input[type=password],textarea{font:inherit;font-weight:400;font-size:16px;border:1px solid var(--line);border-radius:12px;padding:13px 14px;background:var(--bg);color:var(--ink);width:100%}
+input:focus,textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+.err{color:var(--accent);font-weight:600;font-size:14px;min-height:1.3em}
+.notice{background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--ink);border-radius:14px;padding:12px 14px;font-size:14px}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.greet h1{font-size:40px;font-weight:900;letter-spacing:-.02em;margin-top:4px}
+.band{display:flex;gap:18px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px}
+.ring{width:84px;height:84px;flex:none;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .n{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:1px;direction:ltr;font-family:var(--serif);font-weight:700;font-size:24px;font-variant-numeric:tabular-nums}
+.ring .n small{font-size:13px;color:var(--muted);font-family:var(--sans)}
+.band>div:last-child{min-width:0;display:flex;flex-direction:column;gap:4px;flex:1}
+.band h2{font-size:21px}
+.band p{color:var(--muted);font-size:14px}
+.dots{display:flex;gap:6px;margin-top:6px}
+.dots span{height:6px;flex:1;border-radius:3px;background:var(--line)}
+.dots span.on{background:var(--accent)}
+
+.meals{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.meals .head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.meals h2{font-size:21px}
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.thumb{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--line);max-width:100%}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb span{position:absolute;bottom:4px;right:4px;font-size:11px;font-weight:600;background:rgba(0,0,0,.55);color:#fff;border-radius:6px;padding:1px 6px}
+.empty{color:var(--muted);font-size:14px}
+
+.section-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.section-h h2{font-size:24px}
+.list{display:flex;flex-direction:column;gap:12px}
+.tile{position:relative;display:grid;grid-template-columns:1fr auto;align-items:end;gap:12px;min-height:132px;border-radius:22px;padding:18px 20px;color:#fff;text-align:right;overflow:hidden;isolation:isolate;transition:transform .2s}
+.tile:hover{transform:translateY(-2px)}
+.tile::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--g)}
+.tile::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(60% 90% at 0 0,rgba(255,255,255,.28),transparent 70%)}
+.tile .num{position:absolute;top:-14px;left:12px;font-family:var(--serif);font-weight:900;font-size:110px;line-height:1;opacity:.16;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.tile .txt{min-width:0;display:flex;flex-direction:column;gap:4px}
+.tile .eyebrow{color:rgba(255,255,255,.8)}
+.tile h3{font-size:25px;font-weight:700}
+.tile p{font-size:14px;opacity:.88}
+.tile .ic{width:56px;height:56px;border-radius:16px;background:rgba(255,255,255,.16);display:grid;place-items:center}
+.tile .ic svg{width:30px;height:30px}
+.tile .state{position:absolute;top:14px;right:16px;font-size:12px;font-weight:600;background:rgba(255,255,255,.95);color:#16131C;border-radius:999px;padding:3px 10px;display:flex;align-items:center;gap:4px}
+.tile .state svg{width:14px;height:14px}
+.foot{font-size:13px;color:var(--muted);text-align:center;max-width:44ch;margin:0 auto}
+
+.overlay{position:fixed;inset:0;background:rgba(10,8,14,.55);z-index:20;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:94%;overflow-y:auto;border-radius:26px 26px 0 0;animation:up .32s cubic-bezier(.2,.8,.2,1);-webkit-overflow-scrolling:touch}
+@keyframes up{from{transform:translateY(48px);opacity:.3}}
+.hero{position:relative;color:#fff;padding:26px max(20px,env(safe-area-inset-right,0px)) 26px max(20px,env(safe-area-inset-left,0px));min-height:200px;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;overflow:hidden;isolation:isolate}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--g)}
+.hero .num{position:absolute;top:-30px;left:14px;font-family:var(--serif);font-weight:900;font-size:200px;line-height:1;opacity:.14;z-index:-1}
+.hero .bigic{position:absolute;top:22px;right:20px;width:52px;height:52px;opacity:.95}
+.hero h2{font-size:36px;font-weight:900;letter-spacing:-.02em}
+.hero p{opacity:.9}
+.hero .eyebrow{color:rgba(255,255,255,.8)}
+.close{position:absolute;top:16px;left:16px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.22);color:#fff;font-size:20px;display:grid;place-items:center}
+.close.dark{background:var(--line);color:var(--ink)}
+.body{padding:6px max(20px,env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:26px}
+.sec{display:flex;flex-direction:column;gap:12px}
+.sec h3{font-size:22px}
+.lead{font-size:17px;line-height:1.7;padding-top:18px}
+.checks{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.checks label{flex-direction:row;align-items:center;gap:14px;padding:14px 2px;border-bottom:1px solid var(--line);font-weight:500;font-size:16px;cursor:pointer}
+.checks input,.opt input{appearance:none;-webkit-appearance:none;width:24px;height:24px;border:1.5px solid var(--muted);border-radius:8px;flex:none;display:grid;place-items:center;margin:0;transition:background .15s}
+.checks input:checked,.opt input:checked{background:var(--accent);border-color:var(--accent)}
+.checks input:checked::after,.opt input:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.checks label:has(input:checked) span{color:var(--muted);text-decoration:line-through}
+.opt{flex-direction:row;align-items:center;gap:10px;font-weight:500;font-size:14px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 13px;font-size:14px}
+.pick{display:flex;flex-wrap:wrap;gap:8px}
+.pick button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-size:15px;font-weight:600}
+.pick button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+textarea{min-height:120px;resize:vertical;line-height:1.7}
+textarea.paper{min-height:280px;font-family:var(--serif);font-size:18px;line-height:1.8;background:var(--surface)}
+.km{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.km .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.km b{font-family:var(--serif);font-size:44px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+.km b small{font-size:16px;color:var(--muted);font-family:var(--sans);font-weight:500}
+.bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--g,var(--accent));border-radius:5px;transition:width .4s}
+.ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.kmb{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.kmb button{border:1px solid var(--line);border-radius:12px;padding:10px 4px;font-weight:600;font-size:14px;background:var(--bg)}
+.shot{border:1px dashed var(--muted);border-radius:18px;min-height:220px;display:grid;place-items:center;overflow:hidden;position:relative;background:var(--surface);cursor:pointer;color:var(--muted);text-align:center}
+.shot img{width:100%;max-height:360px;object-fit:cover;display:block}
+.shot .ph{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px}
+.shot .ph svg{width:40px;height:40px}
+.shot input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.toast{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:12px;font-weight:600;font-size:15px;z-index:40;max-width:calc(100% - 32px);text-align:center}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat b{font-family:var(--serif);font-size:30px;font-weight:900;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+.links{display:flex;gap:10px;flex-wrap:wrap}
+.links a{flex:1;min-width:140px;text-align:center;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;border-radius:12px;padding:10px;font-weight:600;font-size:14px}
+.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.mealcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-width:0;color:inherit;text-decoration:none}
+.mealcard .img{aspect-ratio:4/3;background:var(--line);max-width:100%}
+.mealcard img{width:100%;height:100%;object-fit:cover;display:block}
+.mealcard .meta{padding:10px 12px;display:flex;flex-direction:column;gap:2px;font-size:13px}
+.mealcard .meta b{font-size:14px}
+.mealcard .meta p{color:var(--muted);overflow-wrap:anywhere}
+.daylog{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.daylog summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:14px 16px}
+.daylog summary::-webkit-details-marker{display:none}
+.daylog .sw{width:36px;height:36px;border-radius:10px;background:var(--g);color:#fff;display:grid;place-items:center;font-family:var(--serif);font-weight:700}
+.daylog summary b{font-size:16px;display:block}
+.pill{font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.pill.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+.pill.no{background:var(--line);color:var(--muted)}
+.daylog .in{padding:0 16px 16px;display:flex;flex-direction:column;gap:12px;font-size:15px}
+.daylog .in h4{margin:0;font-size:13px;color:var(--muted);font-weight:600}
+.daylog .quote{white-space:pre-wrap;background:var(--bg);border-radius:12px;padding:12px 14px;overflow-wrap:anywhere}
+.daylog .quote.serif{font-family:var(--serif);font-size:17px}
+.mini{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.mini li{display:flex;gap:8px;align-items:flex-start}
+.mini li svg{width:16px;height:16px;flex:none;margin-top:4px}
+.mini li.n{color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:380px){.greet h1{font-size:34px}.tile h3{font-size:22px}.login .cover h1{font-size:38px}.stat b{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+/* ===== הגדרה: הדבק כאן את כתובת ה-Web App מ-Google Apps Script ===== */
+const API_URL = "https://script.google.com/macros/s/AKfycbyFc92vR7SxE2NAX0Sarp3hwms706Lozrr_umL-sW-j7WCuOdnPzXOOSi5-MF2AYc79/exec";
+/* =================================================================== */
+
+const KEY="zingo_v2";
+const configured=/^https:\/\/script\.google\.com\//.test(API_URL);
+
+const I=(p)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const ICON={
+ carbs:I('<path d="M5 10a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4c0 1.1-.9 2-2 2v7H7v-7a2 2 0 0 1-2-2z"/><path d="M3 21 21 3"/>'),
+ sugar:I('<rect x="5" y="9" width="10" height="10" rx="2"/><path d="M9 9V5h10v10h-4"/><path d="M3 21 21 3"/>'),
+ walk:I('<path d="M4 17c3-1 5 1 8 0s5-3 8-2"/><circle cx="7" cy="9" r="2"/><path d="M17 3v8"/><path d="M17 3h4l-1.5 2L21 7h-4"/>'),
+ anger:I('<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/><path d="M14 20h6"/>'),
+ forgive:I('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/><path d="M9.5 11.5l2 2 3.5-4"/>'),
+ chef:I('<path d="M3 12h18"/><path d="M5 12v5a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-5"/><path d="M9 8c0-1 1-1.5 1-3M13 8c0-1 1-1.5 1-3"/>'),
+ star:I('<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/>'),
+ check:I('<path d="M5 12l4 4 10-10"/>'),
+ dash:I('<path d="M6 12h12"/>'),
+ camera:I('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'),
+ send:I('<path d="M21 3 10 14"/><path d="M21 3l-7 18-4-7-7-4z"/>'),
+ refresh:I('<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/>')
+};
+
+const DAYS=[
+ {id:1,key:"carbs",g:"linear-gradient(135deg,#F59E0B,#EA580C)",title:"בלי פחמימות",short:"לחם, פסטה ואורז נשארים בחוץ",
+  why:"יום אחד בלי פחמימות פשוטות מראה לך כמה מהן נכנסות לצלחת בלי שאת שמה לב. המטרה היא מודעות, לא רעב. בני כל ארוחה סביב חלבון, ירקות ושומן טוב. צלמי כל ארוחה ושלחי למאמן.",
+  tasks:["ארוחת בוקר: ביצים, גבינה או יוגורט עם ירקות","ארוחת צהריים: חלבון וחצי צלחת ירקות","ארוחת ערב בלי לחם","8 כוסות מים","לפני כל נשנוש: לעצור ולשאול אם זה רעב או שעמום"],
+  chips:["ביצים","טונה","חזה עוף","טופו","קוטג׳","אבוקדו","אגוזים","עלים ירוקים"],
+  journal:"מתי היה הכי קשה היום, ומה עזר לך לעבור את זה?",meals:true},
+ {id:2,key:"sugar",g:"linear-gradient(135deg,#F43F5E,#BE185D)",title:"בלי סוכר",short:"בלי מתוקים ובלי שתייה ממותקת",
+  why:"סוכר מסתתר ביוגורטים, ברטבים ובקפה. היום את מגלה איפה בדיוק. כשמתחשק מתוק, קחי פרי ותני לחשק עשר דקות. ברוב המקרים הוא עובר. צלמי כל ארוחה ושלחי למאמן.",
+  tasks:["קפה ותה בלי סוכר","לקרוא תווית של מוצר אחד ולמצוא בו סוכר","פרי במקום קינוח","רק מים, סודה או תה","לרשום את הרגע שבו החשק הכי חזק"],
+  chips:["תות","תפוח עם טחינה גולמית","ענבים קפואים","מים עם לימון ונענע","תה צמחים"],
+  journal:"מה קרה ברגע שהחשק למתוק הגיע? מה הרגשת?",meals:true},
+ {id:3,key:"walk",g:"linear-gradient(135deg,#0EA5E9,#4338CA)",title:"5 ק״מ ברגל",short:"שעה של הליכה, בקצב שלך",
+  why:"חמישה קילומטרים הם בערך שעה של הליכה נעימה. אפשר בבת אחת או בשני חלקים. עדכני כאן כל קטע שהלכת.",
+  tasks:["לקבוע מסלול ושעה","נעליים נוחות ובקבוק מים","3 דקות חימום","להשלים 5 ק״מ","5 דקות מתיחות בסוף"],
+  chips:["פודקאסט","פלייליסט","עם חברה","בשקיעה"],
+  journal:"איך הגוף והראש הרגישו בסוף ההליכה?",km:true},
+ {id:4,key:"anger",g:"linear-gradient(135deg,#475569,#111827)",title:"מכתב כעס לעצמי",short:"להוציא את מה שיושב בפנים",
+  why:"לפעמים אנחנו כועסות על עצמנו בשקט, וזה נשאר בגוף. היום את נותנת לכעס מקום על הדף, בלי לצנזר ובלי ליפות. אם זה מציף, מותר לעצור ולפנות למישהו קרוב או למאמן.",
+  tasks:["15 דקות שקטות, לבד","לכתוב בלי לעצור ובלי לתקן","לסיים במשפט: ׳מה שהכי כואב לי זה…׳","חמש נשימות עמוקות","לשים לב איך את מרגישה אחרי"],
+  letter:"שחר, אני כועסת עלייך כי…"},
+ {id:5,key:"forgive",g:"linear-gradient(135deg,#A78BFA,#6D28D9)",title:"מכתב סליחה לעצמי",short:"לסלוח, ולפנות מקום להתחלה",
+  why:"אחרי הכעס מגיעה החמלה. כתבי לעצמך כמו שהיית כותבת לחברה הכי טובה שלך. מה היית אומרת לה? מה מגיע לה?",
+  tasks:["לקרוא שוב את מכתב הכעס, אם מתאים לך","לכתוב מכתב סליחה","לכתוב 3 דברים שאת גאה בהם","לקרוא את המכתב בקול","לסיים במשפט: ׳מהיום אני בוחרת…׳"],
+  letter:"שחר, אני סולחת לך על…"},
+ {id:6,key:"chef",g:"linear-gradient(135deg,#10B981,#047857)",title:"יום השפית",short:"ארוחה בריאה לכל המשפחה",
+  why:"היום את במטבח. מתכננת, קונה ומבשלת ארוחה בריאה למשפחה. בלי מטוגן ובלי סוכר מוסף. בסוף מצלמים את השולחן ושולחים למאמן.",
+  tasks:["לתכנן מנה עיקרית, תוספת וסלט","לכתוב רשימת קניות","לבשל בתנור, באידוי או במחבת עם מעט שמן","לשבת לאכול יחד","לצלם את הארוחה ולשלוח"],
+  chips:["סלמון בתנור","עוף בעשבי תיבול","מוקפץ ירקות","מרק עדשים","סלט קינואה","פשטידת ירקות"],
+  journal:"מה המשפחה אמרה? מה תעשי אחרת בפעם הבאה?",menu:true,meals:true},
+ {id:7,key:"star",g:"linear-gradient(135deg,#FF5436,#DB2777 55%,#7C3AED)",title:"סיכום השבוע",short:"מסתכלים אחורה ומפנקים",
+  why:"שבוע של אתגרים מאחורייך. היום קוראים את מה שכתבת, בוחרים הרגל אחד שממשיך איתך, ומפנקים את עצמך במשהו שלא קשור לאוכל.",
+  tasks:["לקרוא את כל מה שכתבת השבוע","לבחור את האתגר שהכי הפתיע אותך","פינוק: מסאז׳, סרט, טיול או ציפורניים","לכתוב למאמן סיכום קצר","לבחור הרגל אחד שנשאר"],
+  journal:"מה למדת על עצמך השבוע?"}
+];
+const MEAL_TYPES=["בוקר","צהריים","ערב","נשנוש"];
+
+/* ---------- local state ---------- */
+const blank=()=>({done:{},tasks:{},notes:{},letters:{},letterPrivate:{},km:0,menu:"",updatedAt:0});
+function loadLocal(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+const L=Object.assign({auth:null,coach:null,state:blank(),meals:[],pending:false},loadLocal());
+let S=Object.assign(blank(),L.state);
+function saveLocal(){L.state=S;try{localStorage.setItem(KEY,JSON.stringify(L))}catch(e){}}
+
+/* ---------- api ---------- */
+async function api(action,body){
+ const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({action},body))});
+ if(!r.ok) throw new Error("http_"+r.status);
+ return r.json();
+}
+let online=null, pushTimer=null, pushing=false;
+function setStatus(v){online=v;document.querySelectorAll("[data-status]").forEach(el=>{el.outerHTML=statusHtml();});}
+const statusHtml=()=>{
+ const t=online===true?"נשלח למאמן":online==="saving"?"שומרת…":online===false?"אין חיבור. יישלח כשיחזור":"מתחבר…";
+ const c=online===true?"":online===false?" off":" wait";
+ return `<div data-status class="status${c}"><b></b>${t}</div>`;
+};
+function sharedState(){
+ const letters={};for(const k in S.letters){if(!S.letterPrivate[k])letters[k]=S.letters[k];}
+ return {done:S.done,tasks:S.tasks,notes:S.notes,letters,letterPrivate:S.letterPrivate,km:S.km,menu:S.menu};
+}
+function save(){
+ S.updatedAt=Date.now(); L.pending=true; saveLocal();
+ if(!configured||!L.auth) return;
+ clearTimeout(pushTimer); pushTimer=setTimeout(push,900);
+}
+async function push(){
+ if(pushing){pushTimer=setTimeout(push,800);return;}
+ pushing=true; setStatus("saving");
+ const sentAt=S.updatedAt;
+ try{
+  const r=await api("save",{user:L.auth.user,pass:L.auth.pass,state:sharedState()});
+  if(r.ok){ if(S.updatedAt===sentAt){L.pending=false;saveLocal();} setStatus(true); }
+  else if(r.error==="bad_login"){ setStatus(false); toast("הסיסמה השתנתה. התחברי מחדש."); L.auth=null; saveLocal(); route(); }
+  else setStatus(false);
+ }catch(e){ setStatus(false); }
+ pushing=false;
+}
+window.addEventListener("online",()=>{if(L.pending&&L.auth)push();});
+
+const app=document.getElementById("app");
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pad=n=>String(n).padStart(2,"0");
+const fmtTime=t=>{try{return new Date(t).toLocaleString("he-IL",{weekday:"short",day:"numeric",month:"numeric",hour:"2-digit",minute:"2-digit"})}catch(e){return""}};
+const thumb=(m,w=600)=>m.local||("https://drive.google.com/thumbnail?id="+encodeURIComponent(m.id)+"&sz=w"+w);
+function grain(cv){if(!cv)return;const r=cv.getBoundingClientRect(),x=cv.getContext("2d");cv.width=Math.max(1,r.width);cv.height=Math.max(1,r.height);
+ const d=x.createImageData(cv.width,cv.height);for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=60}x.putImageData(d,0,0);}
+function toast(t){const el=document.createElement("div");el.className="toast";el.setAttribute("role","status");el.textContent=t;document.body.appendChild(el);setTimeout(()=>el.remove(),2800);}
+
+/* ---------- routing ---------- */
+let sheetOpen=false, coachData=null, coachTimer=null;
+function route(){
+ if(sheetOpen) return;
+ clearInterval(coachTimer);
+ if(L.coach) return renderCoach();
+ if(L.auth) return renderHome();
+ renderLogin();
+}
+
+/* ---------- login ---------- */
+function renderLogin(mode){
+ const coach=mode==="coach";
+ app.innerHTML=`<section class="login">
+  <div class="cover"><canvas aria-hidden="true"></canvas>
+   <div class="mark">זינגו<i>.</i></div>
+   <div><h1>${coach?"לוח מאמן":"שבוע אחד.<br>שבעה אתגרים."}</h1><p>${coach?"כל ההתקדמות, הכתיבה והארוחות במקום אחד.":"גוף, ראש ולב. תוכנית אישית לשחר."}</p></div>
+  </div>
+  <form id="lf" autocomplete="on">
+   ${configured?"":`<p class="notice">האפליקציה עוד לא מחוברת לשרת. אפשר להיכנס ולנסות, אבל הנתונים יישמרו רק בטלפון הזה.</p>`}
+   ${coach?"":`<label for="u">שם משתמש<input id="u" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>`}
+   <label for="p">${coach?"סיסמת מאמן":"סיסמה"}<input id="p" type="password" autocomplete="current-password" required></label>
+   <p class="err" id="e" role="alert"></p>
+   <button class="btn" type="submit" id="go">כניסה</button>
+   <button class="link alt" type="button" id="sw">${coach?"חזרה לכניסת מתאמנת":"כניסת מאמן"}</button>
+  </form></section>`;
+ grain(app.querySelector("canvas"));
+ document.getElementById("sw").onclick=()=>renderLogin(coach?"":"coach");
+ document.getElementById("lf").addEventListener("submit",async ev=>{
+  ev.preventDefault();
+  const err=document.getElementById("e"), go=document.getElementById("go");
+  const pass=document.getElementById("p").value;
+  err.textContent=""; go.disabled=true; go.textContent="מתחברת…";
+  try{
+   if(coach){
+    if(!configured) throw {msg:"לוח המאמן עובד רק אחרי חיבור לשרת."};
+    const r=await api("coach",{pass});
+    if(!r.ok) throw {msg:"סיסמת המאמן לא נכונה."};
+    L.coach={pass}; coachData=r; saveLocal(); route();
+   }else{
+    const user=document.getElementById("u").value.trim().toLowerCase();
+    if(!configured){
+     L.auth={user,pass:"",name:"שחר"};saveLocal();route();return;
+    }
+    const r=await api("login",{user,pass});
+    if(!r.ok) throw {msg:"שם המשתמש או הסיסמה לא נכונים."};
+    L.auth={user,pass,name:r.name||user};
+    if(r.state&&(!S.updatedAt||!L.pending)) S=Object.assign(blank(),r.state,{letters:Object.assign({},r.state.letters,privateLetters())});
+    L.meals=r.meals||[]; saveLocal(); online=true; route();
+    if(L.pending) push();
+   }
+  }catch(e){ err.textContent=e&&e.msg||"אין חיבור לשרת. בדקי אינטרנט ונסי שוב."; go.disabled=false; go.textContent="כניסה"; }
+ });
+}
+function privateLetters(){const o={};for(const k in S.letterPrivate){if(S.letterPrivate[k]&&S.letters[k])o[k]=S.letters[k];}return o;}
+
+/* ---------- trainee home ---------- */
+function renderHome(){
+ const done=DAYS.filter(d=>S.done[d.id]).length, next=DAYS.find(d=>!S.done[d.id]);
+ const circ=2*Math.PI*36, off=circ*(1-done/7);
+ const h=new Date().getHours(), greet=h<5?"לילה טוב":h<12?"בוקר טוב":h<17?"צהריים טובים":"ערב טוב";
+ const ms=L.meals||[];
+ app.innerHTML=`
+ <div class="top"><div class="mark">זינגו<i>.</i></div><button class="link" id="out">יציאה</button></div>
+ <div class="greet"><div class="eyebrow">${greet}</div><h1>${esc(L.auth.name||"שחר")}</h1></div>
+ ${configured?"":`<p class="notice">מצב ניסיון: הנתונים נשמרים רק בטלפון הזה ולא נשלחים למאמן.</p>`}
+ <div class="band">
+  <div class="ring"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="36" stroke="var(--line)" stroke-width="8" fill="none"/><circle cx="42" cy="42" r="36" stroke="var(--accent)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/></svg><div class="n">${done}<small>/7</small></div></div>
+  <div><h2>${done===7?"השבוע הושלם":done?"ממשיכות":"מתחילות היום"}</h2>
+  <p>${next?`הבא: יום ${next.id}, ${next.title}`:"כל שבעת האתגרים מאחורייך."}</p>
+  <div class="dots">${DAYS.map(d=>`<span class="${S.done[d.id]?"on":""}"></span>`).join("")}</div></div>
+ </div>
+ <section class="meals">
+  <div class="head"><h2>הארוחות שלי</h2><span class="count">${ms.length} נשלחו</span></div>
+  ${ms.length?`<div class="thumbs">${ms.slice(0,8).map(m=>`<div class="thumb"><img src="${esc(thumb(m,300))}" alt="ארוחת ${esc(m.type)}" loading="lazy"><span>${esc(m.type)}</span></div>`).join("")}</div>`:`<p class="empty">עוד לא צילמת ארוחה. כל תמונה מגיעה ישר למאמן.</p>`}
+  <button class="btn" id="snap">${ICON.camera}צלמי ארוחה ושלחי</button>
+ </section>
+ <div class="section-h"><h2>שבעת הימים</h2>${configured?statusHtml():""}</div>
+ <div class="list">${DAYS.map(d=>`
+  <button class="tile" style="--g:${d.g}" data-id="${d.id}" aria-label="יום ${d.id}: ${d.title}${S.done[d.id]?", בוצע":""}">
+   <span class="num" aria-hidden="true">${pad(d.id)}</span>
+   ${S.done[d.id]?`<span class="state">${ICON.check}בוצע</span>`:""}
+   <div class="txt"><span class="eyebrow">יום ${d.id}</span><h3>${d.title}</h3><p>${d.short}</p></div>
+   <div class="ic" aria-hidden="true">${ICON[d.key]}</div>
+  </button>`).join("")}</div>
+ <p class="foot">המאמן רואה את ההתקדמות, הכתיבה ותמונות הארוחות שלך. מכתב שתסמני ״רק לעצמי״ נשאר רק בטלפון שלך.</p>`;
+ document.getElementById("out").onclick=()=>{L.auth=null;saveLocal();route();};
+ document.getElementById("snap").onclick=()=>openMeal();
+ app.querySelectorAll(".tile").forEach(b=>b.onclick=()=>openDay(+b.dataset.id));
+}
+
+/* ---------- sheets ---------- */
+function mountSheet(html){
+ sheetOpen=true;
+ const ov=document.createElement("div");ov.className="overlay";ov.innerHTML=html;document.body.appendChild(ov);
+ document.body.style.overflow="hidden";
+ const onKey=e=>{if(e.key==="Escape")close();};
+ function close(){ov.remove();document.removeEventListener("keydown",onKey);document.body.style.overflow="";sheetOpen=false;route();}
+ document.addEventListener("keydown",onKey);
+ ov.addEventListener("click",e=>{if(e.target===ov)close();});
+ ov.querySelectorAll(".close").forEach(b=>b.onclick=close);
+ return {ov,close};
+}
+
+/* ---------- meal capture ---------- */
+function shrink(file,max=1400){
+ return new Promise((res,rej)=>{const url=URL.createObjectURL(file);const im=new Image();
+  im.onload=()=>{const sc=Math.min(1,max/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=Math.round(im.width*sc);cv.height=Math.round(im.height*sc);
+   cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);URL.revokeObjectURL(url);res(cv);};
+  im.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("bad_image"));};im.src=url;});
+}
+function currentDay(){const n=DAYS.find(d=>!S.done[d.id]);return n?n.id:7;}
+function openMeal(presetDay){
+ const h=new Date().getHours();
+ let type=h<11?"בוקר":h<16?"צהריים":h<21?"ערב":"נשנוש", day=presetDay||currentDay(), file=null;
+ const {ov,close}=mountSheet(`<div class="sheet" role="dialog" aria-modal="true" aria-label="צילום ארוחה">
+  <div class="body" style="padding-top:22px;position:relative">
+   <button class="close dark" aria-label="סגירה">✕</button>
+   <div><span class="eyebrow">נשלח ישר למאמן</span><h2 style="font-size:32px;margin-top:4px">צילום ארוחה</h2></div>
+   <label class="shot" id="shot"><span class="ph">${ICON.camera}<span>לחצי כדי לצלם או לבחור תמונה</span></span><input type="file" id="mf" accept="image/*" capture="environment" aria-label="צילום ארוחה"></label>
+   <div class="sec"><h3>איזו ארוחה?</h3><div class="pick" id="mt">${MEAL_TYPES.map(t=>`<button type="button" aria-pressed="${t===type}" data-v="${t}">${t}</button>`).join("")}</div></div>
+   <div class="sec"><h3>של איזה יום באתגר?</h3><div class="pick" id="md">${DAYS.map(d=>`<button type="button" aria-pressed="${d.id===day}" data-v="${d.id}">${d.id}</button>`).join("")}</div></div>
+   <label for="mn">מה יש בצלחת? (לא חובה)<textarea id="mn" style="min-height:80px" placeholder="חביתה משתי ביצים, סלט ירקות, חצי אבוקדו"></textarea></label>
+   <button class="btn" id="msend" disabled>${ICON.send}שליחה למאמן</button>
+  </div></div>`);
+ const sendBtn=ov.querySelector("#msend");
+ ov.querySelector("#mf").onchange=e=>{file=e.target.files[0];if(!file)return;
+  const u=URL.createObjectURL(file);const box=ov.querySelector("#shot");box.querySelector(".ph,img")?.remove();box.insertAdjacentHTML("afterbegin",`<img src="${u}" alt="תצוגה מקדימה">`);sendBtn.disabled=false;};
+ const bindPick=(id,set)=>ov.querySelectorAll(`#${id} button`).forEach(b=>b.onclick=()=>{ov.querySelectorAll(`#${id} button`).forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");set(b.dataset.v);});
+ bindPick("mt",v=>type=v); bindPick("md",v=>day=+v);
+ sendBtn.onclick=async()=>{
+  if(!file) return;
+  sendBtn.disabled=true; sendBtn.textContent="שולחת…";
+  const note=ov.querySelector("#mn").value.trim();
+  try{
+   const cv=await shrink(file);
+   if(configured){
+    const image=cv.toDataURL("image/jpeg",.82);
+    const r=await api("meal",{user:L.auth.user,pass:L.auth.pass,image,type,day,note});
+    if(!r.ok) throw new Error(r.error||"fail");
+    L.meals=[r.meal,...(L.meals||[])]; saveLocal();
+    toast("נשלח למאמן");
+   }else{
+    const s=document.createElement("canvas"),sc=Math.min(1,400/Math.max(cv.width,cv.height));s.width=cv.width*sc;s.height=cv.height*sc;s.getContext("2d").drawImage(cv,0,0,s.width,s.height);
+    L.meals=[{local:s.toDataURL("image/jpeg",.7),type,day,note,at:Date.now()},...(L.meals||[])].slice(0,12);saveLocal();
+    toast("נשמר בטלפון (מצב ניסיון)");
+   }
+   close();
+  }catch(e){
+   sendBtn.disabled=false; sendBtn.innerHTML=`${ICON.send}שליחה למאמן`;
+   toast(e&&e.message==="bad_image"?"לא הצלחתי לפתוח את התמונה. נסי תמונה אחרת.":"השליחה נכשלה. בדקי חיבור ונסי שוב.");
+  }
+ };
+}
+
+/* ---------- day sheet ---------- */
+function openDay(id){
+ const d=DAYS.find(x=>x.id===id);
+ const nDone=()=>d.tasks.filter((_,i)=>S.tasks[d.id+"-"+i]).length;
+ const dayMeals=(L.meals||[]).filter(m=>+m.day===d.id);
+ const {ov,close}=mountSheet(`<div class="sheet" role="dialog" aria-modal="true" aria-label="${d.title}" style="--g:${d.g}">
+  <div class="hero"><span class="num" aria-hidden="true">${pad(d.id)}</span><span class="bigic" aria-hidden="true">${ICON[d.key]}</span>
+   <button class="close" aria-label="סגירה">✕</button>
+   <span class="eyebrow">יום ${d.id} מתוך 7</span><h2>${d.title}</h2><p>${d.short}</p></div>
+  <div class="body">
+   <p class="lead">${d.why}</p>
+   ${d.km?`<div class="sec"><h3>המרחק שלך</h3><div class="km">
+     <div class="row"><b id="kmt">${S.km.toFixed(1)}<small> / 5 ק״מ</small></b><span class="count" id="kmp">${Math.min(100,Math.round(S.km/5*100))}%</span></div>
+     <div class="bar"><i id="kmb" style="width:${Math.min(100,S.km/5*100)}%"></i></div>
+     <div class="ticks"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+     <div class="kmb"><button data-k="0.5">+0.5</button><button data-k="1">+1</button><button data-k="2.5">+2.5</button><button data-k="-0.5">−0.5</button></div>
+   </div></div>`:""}
+   <div class="sec"><div class="section-h"><h3>משימות</h3><span class="count" id="cnt">${nDone()} / ${d.tasks.length}</span></div>
+    <ul class="checks">${d.tasks.map((t,i)=>`<li><label for="t${d.id}-${i}"><input type="checkbox" id="t${d.id}-${i}" data-t="${d.id}-${i}" ${S.tasks[d.id+"-"+i]?"checked":""}><span>${t}</span></label></li>`).join("")}</ul></div>
+   ${d.meals?`<div class="sec"><div class="section-h"><h3>ארוחות היום</h3><span class="count">${dayMeals.length} נשלחו</span></div>
+    ${dayMeals.length?`<div class="thumbs">${dayMeals.map(m=>`<div class="thumb"><img src="${esc(thumb(m,300))}" alt="ארוחת ${esc(m.type)}" loading="lazy"><span>${esc(m.type)}</span></div>`).join("")}</div>`:""}
+    <button class="btn sec" id="snapday">${ICON.camera}צלמי ארוחה</button></div>`:""}
+   ${d.chips?`<div class="sec"><h3>${d.key==="chef"?"רעיונות למנות":d.key==="walk"?"מה יעשה את זה כיף":"מה כן לאכול"}</h3><div class="chips">${d.chips.map(c=>`<span class="chip">${c}</span>`).join("")}</div></div>`:""}
+   ${d.menu?`<div class="sec"><h3>התפריט</h3><label for="menu"><span class="count">מנה עיקרית, תוספת, סלט</span><textarea id="menu" placeholder="סלמון בתנור, בטטה צלויה, סלט ירוק עם לימון">${esc(S.menu)}</textarea></label></div>`:""}
+   ${d.letter?`<div class="sec"><h3>המכתב</h3>
+     <label class="opt" for="lp"><input type="checkbox" id="lp" ${S.letterPrivate[d.id]?"checked":""}>רק לעצמי. המאמן לא יראה את המכתב</label>
+     <textarea id="lt" class="paper" aria-label="המכתב" placeholder="${d.letter}">${esc(S.letters[d.id])}</textarea></div>`:""}
+   ${d.journal?`<div class="sec"><h3>רגע לכתוב</h3><label for="jn"><span class="count">${d.journal}</span><textarea id="jn">${esc(S.notes[d.id])}</textarea></label></div>`:""}
+   <div class="sec"><button class="btn ${S.done[d.id]?"done":""}" id="dn">${S.done[d.id]?"✓ האתגר הושלם":"סיימתי את האתגר"}</button>
+   ${S.done[d.id]?'<p class="count" style="text-align:center">לחיצה נוספת תבטל את הסימון</p>':""}</div>
+  </div></div>`);
+ ov.querySelectorAll("[data-t]").forEach(c=>c.onchange=()=>{S.tasks[c.dataset.t]=c.checked;save();ov.querySelector("#cnt").textContent=`${nDone()} / ${d.tasks.length}`;});
+ ov.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{
+  const k=parseFloat(b.dataset.k),before=S.km;
+  S.km=Math.max(0,Math.round((S.km+k)*10)/10);save();
+  ov.querySelector("#kmb").style.width=Math.min(100,S.km/5*100)+"%";
+  ov.querySelector("#kmt").innerHTML=`${S.km.toFixed(1)}<small> / 5 ק״מ</small>`;
+  ov.querySelector("#kmp").textContent=Math.min(100,Math.round(S.km/5*100))+"%";
+  if(before<5&&S.km>=5)toast("5 ק״מ. כל הכבוד.");
+ });
+ const bind=(sel,fn)=>{const el=ov.querySelector(sel);if(el)el.oninput=()=>{fn(el.value);save();};};
+ bind("#menu",v=>S.menu=v);bind("#jn",v=>S.notes[d.id]=v);bind("#lt",v=>S.letters[d.id]=v);
+ const lp=ov.querySelector("#lp"); if(lp) lp.onchange=()=>{S.letterPrivate[d.id]=lp.checked;save();toast(lp.checked?"המכתב נשאר רק אצלך":"המכתב ישותף עם המאמן");};
+ const sd=ov.querySelector("#snapday"); if(sd) sd.onclick=()=>{close();setTimeout(()=>openMeal(d.id),50);};
+ ov.querySelector("#dn").onclick=()=>{
+  S.done[d.id]=!S.done[d.id];save();
+  if(S.done[d.id]){toast(DAYS.every(x=>S.done[x.id])?"שבעה מתוך שבעה. גאווה.":`יום ${d.id} הושלם`);setTimeout(close,700);}else close();
+ };
+}
+
+/* ---------- coach ---------- */
+async function loadCoach(silent){
+ try{
+  const r=await api("coach",{pass:L.coach.pass});
+  if(!r.ok){L.coach=null;saveLocal();toast("סיסמת המאמן השתנתה. התחבר מחדש.");route();return;}
+  coachData=r; online=true;
+ }catch(e){ online=false; if(!silent) toast("אין חיבור לשרת."); }
+ if(!sheetOpen&&L.coach) renderCoach();
+}
+function renderCoach(){
+ clearInterval(coachTimer);
+ coachTimer=setInterval(()=>loadCoach(true),60000);
+ if(!coachData){ app.innerHTML=`<div class="top"><div class="mark">זינגו<i>.</i></div></div><p class="empty">טוען נתונים…</p>`; loadCoach(); return; }
+ const t=(coachData.trainees||[])[0]||{state:null,meals:[],name:"שחר"};
+ const st=Object.assign(blank(),t.state||{}), ms=t.meals||[];
+ const done=DAYS.filter(d=>st.done[d.id]).length;
+ const tasksDone=Object.values(st.tasks).filter(Boolean).length, tasksAll=DAYS.reduce((a,d)=>a+d.tasks.length,0);
+ app.innerHTML=`
+ <div class="top"><div class="mark">זינגו<i>.</i></div><div style="display:flex;gap:14px;align-items:center"><button class="link" id="rf" aria-label="רענון" style="width:22px">${ICON.refresh}</button><button class="link" id="out">יציאה</button></div></div>
+ <div class="greet"><div class="eyebrow">לוח מאמן</div><h1>${esc(t.name)}</h1>
+  <p class="count" style="margin-top:6px">${st.updatedAt?`עדכון אחרון: ${fmtTime(st.updatedAt)}`:"עוד לא נכנסה לאפליקציה"} · מתרענן כל דקה</p></div>
+ <div class="stats">
+  <div class="stat"><b>${done}/7</b><span>ימים הושלמו</span></div>
+  <div class="stat"><b>${tasksDone}/${tasksAll}</b><span>משימות</span></div>
+  <div class="stat"><b>${ms.length}</b><span>תמונות ארוחה</span></div>
+ </div>
+ <div class="links">${coachData.sheetUrl?`<a href="${esc(coachData.sheetUrl)}" target="_blank" rel="noopener">פתח את הגיליון</a>`:""}${coachData.folderUrl?`<a href="${esc(coachData.folderUrl)}" target="_blank" rel="noopener">תיקיית התמונות</a>`:""}</div>
+ <section class="sec">
+  <div class="section-h"><h2 style="font-size:24px">ארוחות</h2><span class="count">מהחדשה לישנה</span></div>
+  ${ms.length?`<div class="gallery">${ms.map(m=>`<a class="mealcard" href="https://drive.google.com/file/d/${encodeURIComponent(m.id)}/view" target="_blank" rel="noopener"><div class="img"><img src="${esc(thumb(m,600))}" alt="ארוחת ${esc(m.type)}" loading="lazy"></div>
+   <div class="meta"><b>${esc(m.type||"ארוחה")} · יום ${esc(m.day||"?")}</b><span class="count">${fmtTime(m.at)}</span>${m.note?`<p>${esc(m.note)}</p>`:""}</div></a>`).join("")}</div>`
+   :`<p class="empty">עוד לא הגיעו תמונות. כשהיא תצלם ארוחה, התמונה תופיע כאן.</p>`}
+ </section>
+ <section class="sec">
+  <h2 style="font-size:24px">יום אחר יום</h2>
+  ${DAYS.map(d=>{
+   const n=d.tasks.filter((_,i)=>st.tasks[d.id+"-"+i]).length;
+   const letter=(st.letters||{})[d.id], priv=(st.letterPrivate||{})[d.id];
+   return `<details class="daylog" style="--g:${d.g}">
+    <summary><span class="sw">${d.id}</span><span><b>${d.title}</b><span class="count">${n}/${d.tasks.length} משימות${d.km?` · ${Number(st.km||0).toFixed(1)} ק״מ`:""}</span></span>
+     <span class="pill ${st.done[d.id]?"ok":"no"}">${st.done[d.id]?"הושלם":"פתוח"}</span></summary>
+    <div class="in">
+     <ul class="mini">${d.tasks.map((tk,i)=>`<li class="${st.tasks[d.id+"-"+i]?"":"n"}">${st.tasks[d.id+"-"+i]?ICON.check:ICON.dash}<span>${tk}</span></li>`).join("")}</ul>
+     ${d.menu?`<div><h4>התפריט</h4><div class="quote">${st.menu?esc(st.menu):"עוד לא נכתב"}</div></div>`:""}
+     ${d.letter?`<div><h4>המכתב</h4><div class="quote serif">${priv?"היא בחרה לשמור את המכתב לעצמה.":letter?esc(letter):"עוד לא נכתב"}</div></div>`:""}
+     ${d.journal?`<div><h4>${d.journal}</h4><div class="quote">${st.notes[d.id]?esc(st.notes[d.id]):"עוד לא נכתב"}</div></div>`:""}
+    </div></details>`;}).join("")}
+ </section>`;
+ document.getElementById("out").onclick=()=>{L.coach=null;coachData=null;saveLocal();route();};
+ document.getElementById("rf").onclick=()=>loadCoach();
+}
+
+/* ---------- boot ---------- */
+route();
+if(configured&&L.auth){
+ api("meals",{user:L.auth.user,pass:L.auth.pass}).then(r=>{if(r.ok){L.meals=r.meals;saveLocal();online=true;route();}}).catch(()=>{online=false;route();});
+ if(L.pending) push();
+}
+</script>
+</body>
+</html>
