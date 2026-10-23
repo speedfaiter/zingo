@@ -38,6 +38,9 @@ button{font:inherit;cursor:pointer;border:0;color:inherit;background:none}
 .btn.sec{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
 .btn svg{width:20px;height:20px}
 .link{font-size:14px;font-weight:600;color:var(--muted);padding:8px 0}
+.outbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:600}
+.outbtn svg{width:16px;height:16px}
+.hint{font-size:13px;font-weight:400;color:var(--muted)}
 .mark{font-family:var(--serif);font-weight:900;font-size:22px;letter-spacing:-.01em}
 .mark i{font-style:normal;color:var(--accent)}
 .status{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
@@ -206,6 +209,7 @@ const ICON={
  dash:I('<path d="M6 12h12"/>'),
  camera:I('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'),
  send:I('<path d="M21 3 10 14"/><path d="M21 3l-7 18-4-7-7-4z"/>'),
+ logout:I('<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M9 8l-4 4 4 4"/><path d="M5 12h11"/>'),
  refresh:I('<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/>')
 };
 
@@ -322,8 +326,8 @@ function renderLogin(mode){
   </div>
   <form id="lf" autocomplete="on">
    ${configured?"":`<p class="notice">האפליקציה עוד לא מחוברת לשרת. אפשר להיכנס ולנסות, אבל הנתונים יישמרו רק בטלפון הזה.</p>`}
-   ${coach?"":`<label for="u">שם משתמש<input id="u" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>`}
-   <label for="p">${coach?"סיסמת מאמן":"סיסמה"}<input id="p" type="password" autocomplete="current-password" required></label>
+   ${coach?"":`<label for="u">שם משתמש<input id="u" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required><span class="hint">באנגלית (למשל noam) או השם בעברית</span></label>`}
+   <label for="p">${coach?"סיסמת מאמן":"סיסמה"}<input id="p" type="password" autocomplete="current-password" autocapitalize="none" autocorrect="off" required></label>
    <p class="err" id="e" role="alert"></p>
    <button class="btn" type="submit" id="go">כניסה</button>
    <button class="link alt" type="button" id="sw">${coach?"חזרה לכניסת מתאמנים":"כניסת מאמן"}</button>
@@ -347,9 +351,10 @@ function renderLogin(mode){
      if(L.lastUser!==user){S=blank();L.meals=[];L.pending=false;} L.lastUser=user; L.auth={user,pass:"",name:user};saveLocal();route();return;
     }
     const r=await api("login",{user,pass});
-    if(!r.ok) throw {msg:"שם המשתמש או הסיסמה לא נכונים."};
-    if(L.lastUser!==user){S=blank();L.meals=[];L.pending=false;}
-    L.lastUser=user; L.auth={user,pass,name:r.name||user,gender:r.gender||"f"};
+    if(!r.ok) throw {msg:r.error==="no_user"?"לא מצאתי את שם המשתמש. אפשר לכתוב אותו באנגלית (למשל noam) או את השם בעברית.":r.error==="bad_pass"?"הסיסמה לא נכונה. כדאי לבדוק שהמקלדת באנגלית ושאין רווח מיותר.":"שם המשתמש או הסיסמה לא נכונים."};
+    const cu=r.user||user;
+    if(L.lastUser!==cu){S=blank();L.meals=[];L.pending=false;}
+    L.lastUser=cu; L.auth={user:cu,pass,name:r.name||cu,gender:r.gender||"f"};
     if(r.state&&(!S.updatedAt||!L.pending)) S=Object.assign(blank(),r.state,{letters:Object.assign({},r.state.letters,privateLetters())});
     L.meals=r.meals||[]; saveLocal(); online=true; route();
     if(L.pending) push();
@@ -366,7 +371,7 @@ function renderHome(){
  const h=new Date().getHours(), greet=h<5?"לילה טוב":h<12?"בוקר טוב":h<17?"צהריים טובים":"ערב טוב";
  const ms=L.meals||[];
  app.innerHTML=`
- <div class="top"><div class="mark">זינגו<i>.</i></div><button class="link" id="out">יציאה</button></div>
+ <div class="top"><div class="mark">זינגו<i>.</i></div><button class="outbtn" id="out">${ICON.logout}יציאה</button></div>
  <div class="greet"><div class="eyebrow">${greet}</div><h1>${esc(L.auth.name||"")}</h1></div>
  ${configured?"":`<p class="notice">מצב ניסיון: הנתונים נשמרים רק בטלפון הזה ולא נשלחים למאמן.</p>`}
  <div class="band">
@@ -388,8 +393,10 @@ function renderHome(){
    <div class="txt"><span class="eyebrow">יום ${d.id}</span><h3>${d.title}</h3><p>${d.short}</p></div>
    <div class="ic" aria-hidden="true">${ICON[d.key]}</div>
   </button>`).join("")}</div>
+ <button class="btn sec" id="out2">${ICON.logout}יציאה מהחשבון</button>
  <p class="foot">המאמן רואה את ההתקדמות, הכתיבה ותמונות הארוחות שלך. מכתב ${t("{שתסמני|שתסמן}")} ״רק לעצמי״ נשאר רק בטלפון שלך.</p>`;
- document.getElementById("out").onclick=()=>{L.auth=null;saveLocal();route();};
+ const logout=async()=>{ if(L.pending&&configured&&L.auth){ clearTimeout(pushTimer); await push(); } L.auth=null; saveLocal(); window.scrollTo(0,0); route(); };
+ document.getElementById("out").onclick=logout; document.getElementById("out2").onclick=logout;
  document.getElementById("snap").onclick=()=>openMeal();
  app.querySelectorAll(".tile").forEach(b=>b.onclick=()=>openDay(+b.dataset.id));
 }
@@ -532,10 +539,13 @@ function mealCards(ms,showName){
    <div class="meta"><b>${showName?esc(m.who)+" · ":""}${esc(m.type||"ארוחה")} · יום ${esc(m.day||"?")}</b><span class="count">${fmtTime(m.at)}</span>${m.note?`<p>${esc(m.note)}</p>`:""}</div></a>`).join("")}</div>`;
 }
 function coachTop(){
- return `<div class="top"><div class="mark">זינגו<i>.</i></div><div style="display:flex;gap:14px;align-items:center"><button class="link" id="rf" aria-label="רענון" style="width:22px">${ICON.refresh}</button><button class="link" id="out">יציאה</button></div></div>`;
+ return `<div class="top"><div class="mark">זינגו<i>.</i></div><div style="display:flex;gap:14px;align-items:center"><button class="link" id="rf" aria-label="רענון" style="width:22px">${ICON.refresh}</button><button class="outbtn" id="out">${ICON.logout}יציאה</button></div></div>`;
 }
 function bindCoachTop(){
- document.getElementById("out").onclick=()=>{L.coach=null;coachData=null;coachSel=null;saveLocal();route();};
+ const out=()=>{L.coach=null;coachData=null;coachSel=null;saveLocal();window.scrollTo(0,0);route();};
+ document.getElementById("out").onclick=out;
+ app.insertAdjacentHTML("beforeend",`<button class="btn sec" id="out2">${ICON.logout}יציאה מלוח המאמן</button>`);
+ document.getElementById("out2").onclick=out;
  document.getElementById("rf").onclick=()=>loadCoach();
 }
 function renderCoach(){
