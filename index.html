@@ -262,6 +262,8 @@ let S=Object.assign(blank(),L.state);
 function saveLocal(){L.state=S;try{localStorage.setItem(KEY,JSON.stringify(L))}catch(e){}}
 
 /* ---------- api ---------- */
+// the server decides when the coach should get a push; the app delivers it to ntfy
+function relayPing(p){ if(!p||!p.topic) return; try{ fetch("https://ntfy.sh/",{method:"POST",body:JSON.stringify(p),keepalive:true}).catch(()=>{}); }catch(e){} }
 async function api(action,body){
  const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({action},body))});
  if(!r.ok) throw new Error("http_"+r.status);
@@ -351,6 +353,7 @@ function renderLogin(mode){
      if(L.lastUser!==user){S=blank();L.meals=[];L.pending=false;} L.lastUser=user; L.auth={user,pass:"",name:user};saveLocal();route();return;
     }
     const r=await api("login",{user,pass});
+    relayPing(r.ping);
     if(!r.ok) throw {msg:r.error==="no_user"?"לא מצאתי את שם המשתמש. אפשר לכתוב אותו באנגלית (למשל noam) או את השם בעברית.":r.error==="bad_pass"?"הסיסמה לא נכונה. כדאי לבדוק שהמקלדת באנגלית ושאין רווח מיותר.":"שם המשתמש או הסיסמה לא נכונים."};
     const cu=r.user||user;
     if(L.lastUser!==cu){S=blank();L.meals=[];L.pending=false;}
@@ -617,7 +620,7 @@ function renderTrainee(t){
 /* ---------- boot ---------- */
 route();
 if(configured&&L.auth){
- api("meals",{user:L.auth.user,pass:L.auth.pass}).then(r=>{if(r.ok){L.meals=r.meals;saveLocal();online=true;route();}}).catch(()=>{online=false;route();});
+ api("meals",{user:L.auth.user,pass:L.auth.pass}).then(r=>{relayPing(r.ping);if(r.ok){L.meals=r.meals;saveLocal();online=true;route();}}).catch(()=>{online=false;route();});
  if(L.pending) push();
 }
 </script>
