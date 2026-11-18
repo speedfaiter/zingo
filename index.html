@@ -315,7 +315,7 @@ function route(){
  clearInterval(coachTimer);
  if(L.coach) return renderCoach();
  if(L.auth){ DAYS=dayFor(G()); return renderHome(); }
- renderLogin();
+ renderLogin(location.hash==="#meals"?"coach":"");
 }
 
 /* ---------- login ---------- */
@@ -558,6 +558,7 @@ function renderCoach(){
  const list=coachData.trainees||[];
  const t=coachSel!=null&&list.find(x=>x.user===coachSel);
  if(t) return renderTrainee(t);
+ if(location.hash==="#meals") return renderAllMeals(list);
  const allMeals=list.flatMap(x=>(x.meals||[]).map(m=>Object.assign({who:x.name},m))).sort((a,b)=>b.at-a.at);
  app.innerHTML=`${coachTop()}
  <div class="greet"><div class="eyebrow">לוח מאמן</div><h1>המתאמנים</h1>
@@ -573,11 +574,26 @@ function renderCoach(){
   </button>`;}).join("")}</div>
  <div class="links">${coachData.sheetUrl?`<a href="${esc(coachData.sheetUrl)}" target="_blank" rel="noopener">פתח את הגיליון</a>`:""}${coachData.folderUrl?`<a href="${esc(coachData.folderUrl)}" target="_blank" rel="noopener">תיקיית התמונות</a>`:""}</div>
  <section class="sec">
-  <div class="section-h"><h2 style="font-size:24px">ארוחות אחרונות</h2><span class="count">כל המתאמנים</span></div>
+  <div class="section-h"><h2 style="font-size:24px">ארוחות אחרונות</h2><a class="link" href="#meals" id="allm">לכל התמונות ←</a></div>
   ${allMeals.length?mealCards(allMeals.slice(0,12),true):`<p class="empty">עוד לא הגיעו תמונות.</p>`}
  </section>`;
  bindCoachTop();
  app.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{coachSel=b.dataset.u;renderCoach();window.scrollTo(0,0);});
+}
+function renderAllMeals(list){
+ const all=list.flatMap(x=>(x.meals||[]).map(m=>Object.assign({who:x.name,u:x.user},m))).sort((a,b)=>b.at-a.at);
+ const people=list.filter(x=>(x.meals||[]).length);
+ const f=renderAllMeals.f||"";
+ const shown=f?all.filter(m=>m.u===f):all;
+ app.innerHTML=`${coachTop()}
+ <button class="link" id="back" style="align-self:flex-start">→ לוח המאמן</button>
+ <div class="greet"><div class="eyebrow">לוח מאמן</div><h1>תמונות הארוחות</h1>
+  <p class="count" style="margin-top:6px">${all.length} תמונות מ-${people.length} מתאמנים</p></div>
+ <div class="pick" id="mf"><button type="button" aria-pressed="${!f}" data-v="">כולם</button>${people.map(x=>`<button type="button" aria-pressed="${f===x.user}" data-v="${esc(x.user)}">${esc(x.name)} (${x.meals.length})</button>`).join("")}</div>
+ ${shown.length?mealCards(shown,true):`<p class="empty">עוד לא הגיעו תמונות.</p>`}`;
+ bindCoachTop();
+ document.getElementById("back").onclick=()=>{history.replaceState(null,"",location.pathname);renderCoach();window.scrollTo(0,0);};
+ app.querySelectorAll("#mf button").forEach(b=>b.onclick=()=>{renderAllMeals.f=b.dataset.v;renderAllMeals(list);});
 }
 function renderTrainee(t){
  const isM=t.gender==="m"; DAYS=dayFor(isM);
@@ -617,6 +633,7 @@ function renderTrainee(t){
  document.getElementById("back").onclick=()=>{coachSel=null;renderCoach();window.scrollTo(0,0);};
 }
 
+window.addEventListener("hashchange",()=>{if(L.coach&&!sheetOpen)renderCoach();});
 /* ---------- boot ---------- */
 route();
 if(configured&&L.auth){
